@@ -1,0 +1,175 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Generate Random number</title>
+		<link rel="SHORTCUT ICON" href="favicon.ico" type="image/x-icon">
+		
+		<meta name="viewport" content="width=320,initial-scale=1.0">
+	<style>
+		html, body {
+		  background-color: #cccccc;
+		  color: black;
+		  font-family: 'Arial';
+		  font-size: 18px;
+			margin: 0;
+		}
+
+		body {
+			height: 100%;
+		}
+
+		#loading {
+		  margin: 20px auto;
+		  font-size: 44px;
+		  max-width: 320px;
+			min-height: 568px;
+		}
+
+		#app {
+		  display: flex;
+		  visibility: hidden;
+		  flex-direction: column;
+		  justify-content: flex-start;
+		  align-items: center;
+		  width: 100%;
+		  max-width: 320px;
+		  padding: 15px;
+		  margin: 0 auto;
+			background-color: white;
+		}
+		
+		.header {
+		  font-size: 34px;
+		  margin-top: 20px;
+		}
+
+		.number {
+		  font-size: 110px;
+		  height: 120px;
+		}
+
+		.gen {
+		  width: 280px;
+		  height: 80px;
+		  font-size: 24px;
+		  
+		  border-radius: 10px;
+		  outline: none;
+		  margin: 5px 0 20px 0;
+		}
+
+		.yellow {
+		  background: linear-gradient(to bottom, #ff9933, #cccc00);
+		}
+
+		.red {
+		  background: linear-gradient(to bottom, #ff0000, #ff9999);
+		}
+
+		.players {
+		  margin-bottom: 30px;
+		}
+
+		.players select {
+		  height: 40px;
+		  width: 100px;
+		  font-size: 18px;
+		}
+
+		.seq {
+		  margin-bottom: 80px;
+		}
+	</style></head>
+	
+	 <body>
+		<div id="loading">Загрузка...</div>
+		 <div id="app">
+		  <div class="header">Случайное число:</div>
+		  <div class="number"><span v-if="generated" >{{currentNumber}}</span></div>
+		  <button class="gen yellow" v-on:click="generate()">Сгенерировать</button>
+		  <div class="players">Число игроков: <select v-model="players">
+			  <option v-for="p in selArr" :value="p">{{p}}</option>
+			  </select>
+		  </div>
+		  <div class="seq">Последовательность: {{sequenceStr}}</div>
+		  <button class="gen red" v-on:click="reset()">Сброс</button>
+		</div>
+	 <script type="text/javascript" src="vue.js"></script>
+	 <script type="text/javascript">
+		var app = new Vue({
+		  el: '#app',
+		  data: {
+			randomArr : [],
+			players : 0,
+			selArr : [],
+			generated : false,
+			current : 0,
+			initialChange: true
+		  },
+		  watch : {
+			players: function() {
+				if (!this.initialChange) this.reset();
+				this.initialChange = false;
+			}
+		  },
+		  methods : {
+			generate: function() {
+			  if (!this.generated) {
+				this.generateArr();
+				this.generated = true;
+			  }
+			  else if (this.current == this.randomArr.length - 1) {
+				alert("Done!");
+				return;
+			  }
+			  else this.current++;
+			},
+			generateArr : function() {
+			  for (var j=1; j<=this.players; j++)
+				this.randomArr.push(j);
+			  this.randomArr.sort(function() { return Math.random() - 0.5 });
+			  },
+			reset: function() {
+			  this.generated = false;
+			  this.randomArr = [];
+			  this.current = 0;
+			},
+			onUnload: function() {
+				this.initialChange = true;
+				localStorage.setItem("data-random-number", JSON.stringify(this.$data));
+			}
+		  },
+		  created : function() {
+				if (!localStorage.getItem("data-random-number")) {
+					for (var i=8; i<=17; i++)
+						this.selArr.push(i);
+					this.players = 15;
+				}
+				else {
+					let data = JSON.parse(localStorage.getItem("data-random-number"));
+					for (let key in data) {
+						if (key == 'selArr' || key == 'randomArr') {
+							data[key].map((v, i) => { this[key].push(v); });
+						}
+						else this[key] = data[key];
+					}
+				}
+		  },
+		  mounted: function() {
+			document.getElementById('loading').style.display = 'none';
+			document.getElementById('app').style.visibility = 'visible';
+			let isOnIOS = navigator.userAgent.match(/iPad/i)|| navigator.userAgent.match(/iPhone/i);
+      let eventName = isOnIOS ? "pagehide" : "beforeunload";
+      window.addEventListener(eventName, this.onUnload);
+		  },
+		  computed : {
+			sequenceStr : function() {
+			  return this.randomArr.slice(0, this.current + 1).join("-");
+			},
+			  currentNumber : function() {
+				return this.randomArr[this.current] || 0;
+			  }
+		  }
+		  
+		});
+	 </script>
+
+</body></html>
