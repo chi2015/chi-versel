@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include ("../partials/chi-header.ejs") %>
+</head>
+
+<body>
+	<div class="main-block">
+		<div class="inner-block">
+			<ul class="projects-menu">
+				<% menu.forEach(function(item) { %>
+        			<li><a class="<%= item.className %>" href="<%= item.url %>"><%= item.title %></a></li>
+    			<% }); %>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

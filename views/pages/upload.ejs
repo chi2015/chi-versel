@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include ("../partials/upload-header.ejs") %>
+</head>
+
+<body>
+
+<div id='root'> 
+	<p>Choose file to upload</p>
+	<input type="file" id="upload_file" name="upload_file" />
+</div>
+
+<script type="text/javascript">
+	const input = document.getElementById('upload_file')
+	const upload = (file) => {
+  		const formData = new FormData()
+  		formData.append('upload_file', file)
+  		fetch('/upload-new', {
+    		method: 'POST',
+    		body: formData
+  		}).then(
+    		response => response.json()
+  		).then(
+    		success => console.log(success)
+  		).catch(
+    		error => console.log(error)
+  		);
+	}
+	const onSelectFile = () => upload(input.files[0])
+	input.addEventListener('change', onSelectFile, false)
+</script>
+</body>
+</html>

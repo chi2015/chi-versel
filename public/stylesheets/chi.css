@@ -1,0 +1,129 @@
+.main-block {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.inner-block {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 720px;
+}
+
+ul.projects-menu {
+	list-style-type: none;
+	padding:0;
+}
+
+ul.projects-menu li a {
+	display: block;
+	margin: 10px 0;
+	border: none;
+	text-align: center;
+	width: 100%;
+	text-decoration:none;
+	line-height: 90px;
+	font-family: "Verdana";
+	transition: 0.3s;
+}
+
+ul.projects-menu li a:hover, ul.projects-menu li a:visited {
+	text-decoration:none;
+}
+
+.playlist
+{
+	background-color: #000000;
+	color: #16EE47;
+	font-size: 36px;
+	font-weight: bold;
+    font-style: italic;
+}
+
+.playlist:hover
+{
+	background-color: #222222;
+	color: #64ff87;
+	
+}
+
+.itunes100
+{
+	background-color: #CCCCCC;
+	color: #0000ff;
+	font-weight: bold;
+	font-size: 28px;
+}
+
+.itunes100:hover
+{
+	background-color: #EEEEEE;
+	color: #3366ff;
+}
+
+.albums
+{
+	background-color: #6c6c6c;
+	color: #131375;
+	font-size: 28px;
+}
+
+.albums:hover
+{
+	background-color: #919191;
+	color: #2222cc;
+}
+
+.citadels {
+	color: #dddddd;
+	background-color: #6666ff;
+	font-weight: bold;
+	font-size: 36px;
+
+}
+
+.citadels:hover {
+	color: white;
+	background-color: #8080ff;
+}
+
+.bbb
+{
+	background-color: #000000;
+	color: #cc0000;
+	font-size: 26px;
+	font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bbb:hover
+{
+	background-color: #222222;
+	color: #ee0000;
+	
+}
+
+.m-combinations
+{
+	font-size: 26px;
+	background-color: black;
+	color: #cccccc;
+}
+
+.m-combinations:hover
+{
+	background-color: #111111;
+	color: white;
+}
+
+.mafia-tools {
+	font-size: 26px;
+	color: #392613;
+	background-color: #d9b38c;
+
+}
+
+.mafia-tools:hover {
+	color: #604020;
+	background-color: #e9c096;
+
+}
