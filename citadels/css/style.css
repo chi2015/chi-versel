@@ -1,0 +1,614 @@
+html, body {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	color: #333;
+	font-weight: bold;
+	background-color: #BBBBBB;
+}
+
+h1, h2, h3 {
+	margin: 0;
+}
+
+p {
+	margin: 5px 0;
+}
+
+.loading-block {
+	width: 100%;
+	text-align: center;
+	font-size: 18px;
+}
+
+.main-block {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.head-block {
+	margin: 20px 0;
+	width: 100%;
+	position: relative;
+	text-align: center;
+}
+
+.head-block button.finish {
+	position: absolute;
+	right: 5px;
+	top: 1px;
+}
+
+.head-block button.restart {
+	margin-top: 10px;
+}
+
+.start-block {
+	width: 550px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	background-image: url('../startpic.jpg');
+	background-size: 550px auto;
+	position: relative;
+}
+
+.start-crown {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+
+.start-head-block {
+	text-align: center;
+	margin: 15px 0;
+}
+
+.start-subblock {
+	background-color: #99bbff;
+	margin: 205px 0 20px 0;
+	width: 408px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.input-block {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	width: 335px;
+	margin: 5px 0;
+	-webkit-box-pack: justify;
+	    -ms-flex-pack: justify;
+	        justify-content: space-between;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.game-type-block {
+	width: 320px;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	            -ms-grid-row-align: flex-start;
+	        align-items: flex-start;
+	
+}
+
+.start-button-block {
+	width: 100%;
+	text-align: center;
+	margin: 5px 0;
+}
+
+.start-button-block button {
+	width: 90px;
+	height: 28px;
+	font-size: 14px;
+}
+
+.start-footer-block {
+	width: 100%;
+	margin: 5px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+    -ms-flex-direction: row;
+	flex-direction: row;
+    -webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+    justify-content: space-between;
+    font-size: 12px;
+	
+}
+
+.game-version {
+	margin-left: 5px;
+}
+
+.game-rules {
+	margin-right: 5px;
+}	
+
+.phaze-block, .districts-block {
+	/*height: 190px;*/
+}
+
+.cards-list, .characters-list {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	margin: auto 0;
+}
+
+.characters-list {
+	height: 140px;
+}
+
+.cards-list .card-item, .characters-list .card-item {
+	margin: 5px;
+}
+
+.lighthouse-cards {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-ms-flex-wrap: wrap;
+	    flex-wrap: wrap;
+	width: 900px;
+}
+
+.lighthouse-cards .card-item {
+	margin: 5px;
+}	
+
+.board {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: stretch;
+	    -ms-flex-align: stretch;
+	        align-items: stretch;
+	height: 215px;
+	border: solid black 2px;
+}
+
+.board-1 {
+	margin-top: 20px;
+}
+
+.board-2 {
+	margin-bottom: 20px;
+}
+
+.profile {
+	width: 173px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-pack: justify;
+	    -ms-flex-pack: justify;
+	        justify-content: space-between;
+	-webkit-box-align: stretch;
+	    -ms-flex-align: stretch;
+	        align-items: stretch;
+	border: solid black 1px;
+}
+
+.profile-head {
+	height: 33px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	    -ms-flex-pack: justify;
+	        justify-content: space-between;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+}
+
+.profile-name {
+	margin: 3px 0 0 5px;
+}
+
+.profile-crown img {
+	height: 33px;
+}
+
+.resources {
+	height: 40px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.rs-block {
+	margin: 10px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	display-flex: row;
+	-webkit-box-pack: justify;
+	    -ms-flex-pack: justify;
+	        justify-content: space-between;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	width: 50px;
+}
+
+.resource-pic {
+	margin: 2px;
+}
+
+.resource-pic img {
+	height: 33px;
+}
+
+.resource-count {
+	font-size: 22px;
+}
+
+.districts {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+	min-width:801px;
+}
+
+.actions-block {
+	margin: 20px 0;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+}
+
+.character-block {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.card-block {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-pack: start;
+	    -ms-flex-pack: start;
+	        justify-content: flex-start;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+}
+
+.character-notes {
+	font-size: 14px;
+	font-weight: normal;
+	color: red;
+	height: 15px;
+}
+
+.score {
+	margin: 0 0 2px 5px;
+}
+
+.score-block {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-pack: justify;
+	    -ms-flex-pack: justify;
+	        justify-content: space-between;
+	width:100%;
+}
+
+.magic-buttons {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: row;
+	        flex-direction: row;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.magic-buttons button:first-child {
+	margin-right: 5px;
+}
+
+.magic-buttons button:last-child {
+	margin-left: 5px;
+}
+
+.discard-button {
+	margin: 3px 0;
+}
+
+.board-1 .districts-list {
+	margin-top: 47px;
+}
+
+.board-2 .districts-list {
+	margin-top: 47px;
+}
+
+.extended_characters_block {
+	margin-bottom: 10px;
+}
+
+div[data-ember-action] {
+  cursor: pointer;
+}
+
+div[data-ember-action]:hover, .current {
+	/*box-shadow: 0 0 10px #668cff;*/
+	box-shadow: 0 0 20px #0039e6;
+}
+
+.discard-block .card-item {
+	opacity: 0.5;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 180px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 8%;
+    margin-left: -60px;
+    font-weight: normal;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 0, 0, 0.5) transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    
+}
+
+.notes-head {
+	margin-top: 0;
+}
+
+.gamenotes-block {
+	font-weight: normal;
+	font-style: italic;
+	padding: 10px 5px;
+	width: 500px;
+	background-color: #CCCCCC;
+}
+
+.notice {
+	font-weight: normal;
+	font-size: 12px;
+	padding: 0 10px;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 0 6px;
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.sprite { background: url('../sprite.png') no-repeat top left; width: 75px; height: 120px;  } 
+.sprite.armory { background-position: 0 0; } 
+.sprite.ballroom { background-position: -78px 0; } 
+.sprite.barracks { background-position: -156px 0; } 
+.sprite.belltower { background-position: -234px 0; } 
+.sprite.card { background-position: -312px 0; width: 33px; height: 33px; } 
+.sprite.castle { background-position: -348px 0; } 
+.sprite.cathedral { background-position: -426px 0; } 
+.sprite.character1 { background-position: -504px 0; } 
+.sprite.character2 { background-position: -582px 0; } 
+.sprite.character3 { background-position: -660px 0; } 
+.sprite.character4 { background-position: -738px 0; } 
+.sprite.character5 { background-position: -816px 0; } 
+.sprite.character6 { background-position: -894px 0; } 
+.sprite.character7 { background-position: -972px 0; } 
+.sprite.character8 { background-position: -1050px 0; } 
+.sprite.character11 { background-position: -1128px 0; } 
+.sprite.character12 { background-position: -1206px 0; } 
+.sprite.character13 { background-position: -1284px 0; } 
+.sprite.character14 { background-position: -1362px 0; } 
+.sprite.character15 { background-position: -1440px 0; } 
+.sprite.character16 { background-position: -1518px 0; } 
+.sprite.character17 { background-position: -1596px 0; } 
+.sprite.character18 { background-position: -1674px 0; } 
+.sprite.church { background-position: -1752px 0; } 
+.sprite.city { background-position: -1830px 0; } 
+.sprite.crown { background-position: -1908px 0; width: 33px; height: 33px; } 
+.sprite.domain { background-position: -1944px 0; } 
+.sprite.dragongate { background-position: -2022px 0; } 
+.sprite.faceup { background-position: -2100px 0; } 
+.sprite.factory { background-position: -2178px 0; } 
+.sprite.fortress { background-position: -2256px 0; } 
+.sprite.fountain { background-position: -2334px 0; } 
+.sprite.gold { background-position: -2412px 0; width: 33px; height: 33px; } 
+.sprite.graveyard { background-position: -2448px 0; } 
+.sprite.greatwall { background-position: -2526px 0; } 
+.sprite.harbour { background-position: -2604px 0; } 
+.sprite.hospital { background-position: -2682px 0; } 
+.sprite.keep { background-position: -2760px 0; } 
+.sprite.lab { background-position: -2838px 0; } 
+.sprite.library { background-position: -2916px 0; } 
+.sprite.lighthouse { background-position: -2994px 0; } 
+.sprite.maproom { background-position: -3072px 0; } 
+.sprite.market { background-position: -3150px 0; } 
+.sprite.monastery { background-position: -3228px 0; } 
+.sprite.museum { background-position: -3306px 0; } 
+.sprite.observatory { background-position: -3384px 0; } 
+.sprite.palace { background-position: -3462px 0; } 
+.sprite.park { background-position: -3540px 0; } 
+.sprite.poorhouse { background-position: -3618px 0; } 
+.sprite.prison { background-position: -3696px 0; } 
+.sprite.quarry { background-position: -3774px 0; } 
+.sprite.school { background-position: -3852px 0; } 
+.sprite.store { background-position: -3930px 0; } 
+.sprite.tavern { background-position: -4008px 0; } 
+.sprite.temple { background-position: -4086px 0; } 
+.sprite.throneroom { background-position: -4164px 0; width: 76px; } 
+.sprite.townhall { background-position: -4243px 0; } 
+.sprite.treasury { background-position: -4321px 0; } 
+.sprite.university { background-position: -4399px 0; } 
+.sprite.warehouse { background-position: -4477px 0; } 
+.sprite.watchtower { background-position: -4555px 0; } 
+.sprite.workshop { background-position: -4633px 0; } 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>M players combinations</title>
+		<link rel="stylesheet" type="text/css" href="app.css?v=2"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	</head>
+<body>
+	<div id="app">
+	  <div class="main-block">
+	  <div class="selects">
+		<div>
+		Players:
+		<select v-model="playersCnt" v-on:change="changePlayersCnt()">
+		  <option v-for="p in pSelect" :value="p">{{p}}</option>
+		  </select>
+		</div>
+		 <div> Ms:
+		 <select v-model="m">
+			<option v-for="mi in mSelect" :value="mi">{{mi}}</option>
+		  </select>
+		</div>
+	  </div>
+	  
+	  <div class="choose-check">
+		<div>Choose to check:</div>
+		<div :class="['player', checking]" v-on:click="switchChecking()"></div>
+	  </div>
+	  
+	  <div class="players">
+	  <template v-for="(player, index) in players">
+		<div :class="['player', player.color]" v-on:click="setPlayerColor(index)">{{player.num}}</div>
+	  </template>
+		</div>
+		<div class="info">
+		  <div>
+			<p>Combinations:</p>
+	  <div v-for="comb in combinations" class="combinations">
+		<span v-for="num in comb">{{num}} </span>
+	  </div>
+		  </div>
+		  <div>
+			 <p v-if="contras.length">Contras:</p>
+		<div v-for="contra in contras" class="combinations">
+		<span v-for="num in contra">{{num}} </span>
+	  </div>
+		  </div>
+		</div>
+	  
+	   
+		<br/>
+		 <button v-on:click="reset()">Reset</button>
+	  </div>
+	 
+	</div>
+	<script type="text/javascript" src="vue.js"></script>
+	<script type="text/javascript" src="app.js?v=1"></script>
+</body>
+</html>
