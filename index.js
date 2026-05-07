@@ -302,7 +302,7 @@ const app = express()
       .replace(/'/g, "&#039;");
   	
   	const prepareBlock = (arr, offset, count, score) => {
-  		let = ret = []
+  		let ret = []
   		for (let i = offset; i<offset+count; i++) {
   			const is_new = arr[i].indexOf('*') === 0
   			const song = arr[i].replace('*', '').replace(/(.+)\s(feat\.\s.+)(\s-\s.+)/, "$1$3 ($2)")
