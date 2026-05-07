@@ -20,6 +20,8 @@ const mysql = require('mysql')
 
 const formidable = require('formidable')
 
+require('ejs')
+
 const app = express()
   .use(express.static(path.join(__dirname, 'public')))
   .use(bodyParser.urlencoded({ extended: false }))
