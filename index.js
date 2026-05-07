@@ -20,7 +20,7 @@ const mysql = require('mysql')
 
 const formidable = require('formidable')
 
-express()
+const app = express()
   .use(express.static(path.join(__dirname, 'public')))
   .use(bodyParser.urlencoded({ extended: false }))
   .use('/albums', express.static(path.join(__dirname, 'albums')))
@@ -599,4 +599,9 @@ ORDER BY total DESC , artist ASC
   			res.end(JSON.stringify({ error: 'Wrong action' }))
   	}
   })
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+
+module.exports = app
+
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+}

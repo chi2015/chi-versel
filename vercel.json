@@ -1,15 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "{albums,bbb,citadels,itunes100,m-combinations,mafia-random-card,mafia-random-number,playlist,public,views}/**"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/index.js"
-    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" }
   ]
 }
