@@ -415,6 +415,32 @@ const app = express()
 				})
   			})
   			break
+  		case 'previous':
+  			con.connect(err => {
+  				if (err) {
+  					con.end()
+  					res.end(JSON.stringify({ error: 'Could not connect database' }))
+  					return
+  				}
+  				query = `SELECT DISTINCT pl_date
+									FROM playlist
+									WHERE pl_date <= DATE_SUB('${pl_date}', INTERVAL 7 DAY) ORDER BY pl_date DESC LIMIT 1`
+				console.log('query', query)
+				con.query(query, (err, result) => {
+					if (err) {
+						con.end()
+						res.end(JSON.stringify({ error: 'Error get playlist date query' }))
+						return
+					}
+  					if (result.length === 0) {
+  						con.end()
+  						res.end(JSON.stringify({ error: 'No playlist 7 days or more before this date' }))
+  						return
+  					}
+  					pl_get(result[0].pl_date)
+				})
+  			})
+  			break
   		case 'top100':
   			con.connect(err => {
   				if (err) {
