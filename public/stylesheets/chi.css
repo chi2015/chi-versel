@@ -30,20 +30,35 @@ ul.projects-menu li a:hover, ul.projects-menu li a:visited {
 	text-decoration:none;
 }
 
+.poker-chips-counter
+{
+	background-color: #0d2b1a;
+	color: #f0c040;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 32px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+}
+
+.poker-chips-counter:hover
+{
+	background-color: #1a4a2e;
+	color: #f5d060;
+}
+
 .playlist
 {
-	background-color: #000000;
-	color: #16EE47;
+	background-color: #0c0c10;
+	color: #22d36b;
+	font-family: "Figtree", system-ui, sans-serif;
 	font-size: 36px;
-	font-weight: bold;
-    font-style: italic;
+	font-weight: 700;
 }
 
 .playlist:hover
 {
-	background-color: #222222;
-	color: #64ff87;
-	
+	background-color: #141418;
+	color: #1aaa55;
 }
 
 .itunes100
@@ -62,15 +77,17 @@ ul.projects-menu li a:hover, ul.projects-menu li a:visited {
 
 .albums
 {
-	background-color: #6c6c6c;
-	color: #131375;
-	font-size: 28px;
+	background-color: #f6f1e6;
+	color: #9a3a1c;
+	font-family: "Fraunces", "Newsreader", Georgia, serif;
+	font-size: 32px;
+	font-weight: 600;
 }
 
 .albums:hover
 {
-	background-color: #919191;
-	color: #2222cc;
+	background-color: #ece4d2;
+	color: #7d2d12;
 }
 
 .citadels {
@@ -102,28 +119,3 @@ ul.projects-menu li a:hover, ul.projects-menu li a:visited {
 	
 }
 
-.m-combinations
-{
-	font-size: 26px;
-	background-color: black;
-	color: #cccccc;
-}
-
-.m-combinations:hover
-{
-	background-color: #111111;
-	color: white;
-}
-
-.mafia-tools {
-	font-size: 26px;
-	color: #392613;
-	background-color: #d9b38c;
-
-}
-
-.mafia-tools:hover {
-	color: #604020;
-	background-color: #e9c096;
-
-}
