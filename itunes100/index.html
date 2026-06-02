@@ -14,7 +14,26 @@
 			</select>
 			<div id="list"></div>
 		</div>
-		
+
+		<div id="sticky-player" class="itunes-sticky-player">
+			<div class="itunes-sticky-row">
+				<div class="itunes-sticky-rank" id="sticky-rank">#1</div>
+				<div class="itunes-sticky-art-cell">
+					<img id="sticky-art" class="itunes-sticky-art" alt="" src=""/>
+				</div>
+				<div class="itunes-sticky-info">
+					<span id="sticky-artist" class="itunes-sticky-artist"></span>
+					<span class="itunes-sticky-sep"> &mdash; </span>
+					<span id="sticky-title" class="itunes-sticky-title"></span>
+				</div>
+				<div class="itunes-sticky-controls">
+					<button type="button" id="sticky-prev" class="itunes-sticky-btn" onclick="stickyPrev();">Prev</button>
+					<button type="button" id="sticky-play" class="itunes-sticky-btn" onclick="stickyPlay();">Pause</button>
+					<button type="button" id="sticky-next" class="itunes-sticky-btn" onclick="stickyNext();">Next</button>
+				</div>
+			</div>
+		</div>
+
 	</body>
 	<script type="text/javascript" src="/itunes100/main.js?r=050920172223"></script>
 </html>

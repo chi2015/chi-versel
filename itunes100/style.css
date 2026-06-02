@@ -154,3 +154,145 @@ a.dl_link img {
 	background-image: url('/itunes100/itunes-loading.png');
 }
 
+table tr.itunes-active-row td {
+	background-color: #fff3d6 !important;
+	box-shadow: inset 0 0 0 1px #d6b820, inset 1px 0 0 #fff;
+}
+
+table tr.itunes-active-row td:first-child {
+	background: linear-gradient(#c79a00, #8a6800);
+	color: #fff;
+	text-shadow: 0 1px 0 #000;
+	box-shadow: inset 1px 0 0 #e6c64a;
+}
+
+.itunes-sticky-player {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #f1f1f1;
+	border-top: 1px solid #333;
+	box-shadow: inset 0 1px 0 #fff, 0 -2px 8px rgba(0, 0, 0, .15);
+	font-family: "Verdana";
+	font-size: 14px;
+	font-weight: bold;
+	color: blue;
+	display: none;
+	z-index: 100;
+}
+
+.itunes-sticky-player.visible {
+	display: block;
+}
+
+body.has-sticky-player {
+	padding-bottom: 80px;
+}
+
+.itunes-sticky-row {
+	display: flex;
+	align-items: stretch;
+	min-height: 60px;
+}
+
+.itunes-sticky-rank {
+	background: linear-gradient(#777, #444);
+	border-right: 1px solid #555;
+	box-shadow: inset 1px 1px 0 #999, inset 0 -1px 0 #333;
+	color: #fff;
+	text-shadow: 0 1px 0 #000;
+	padding: 0 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 60px;
+	font-size: 18px;
+}
+
+.itunes-sticky-art-cell {
+	background: #f5f5f5;
+	border-right: 1px solid #fff;
+	border-left: 1px solid #e8e8e8;
+	box-shadow: inset 0 1px 0 #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px;
+}
+
+.itunes-sticky-art {
+	width: 50px;
+	height: 50px;
+	display: block;
+	background: #ddd;
+}
+
+.itunes-sticky-info {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	padding: 5px 15px;
+	border-right: 1px solid #fff;
+	border-left: 1px solid #e8e8e8;
+	box-shadow: inset 0 1px 0 #fff;
+	text-align: left;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.itunes-sticky-artist,
+.itunes-sticky-title,
+.itunes-sticky-sep {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.itunes-sticky-sep {
+	flex-shrink: 0;
+}
+
+.itunes-sticky-controls {
+	display: flex;
+	align-items: stretch;
+	background: #f5f5f5;
+	border-left: 1px solid #e8e8e8;
+	box-shadow: inset 0 1px 0 #fff;
+	padding: 5px;
+	gap: 4px;
+}
+
+.itunes-sticky-btn {
+	background: linear-gradient(#777, #444);
+	border-left: 1px solid #555;
+	border-right: 1px solid #777;
+	border-top: 1px solid #555;
+	border-bottom: 1px solid #333;
+	box-shadow: inset 0 1px 0 #999;
+	color: #fff;
+	font-family: "Verdana";
+	font-size: 13px;
+	font-weight: bold;
+	text-shadow: 0 1px 0 #000;
+	padding: 8px 14px;
+	min-width: 56px;
+	cursor: pointer;
+}
+
+.itunes-sticky-btn:hover {
+	background: linear-gradient(#888, #555);
+}
+
+.itunes-sticky-btn:active {
+	background: linear-gradient(#444, #777);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+@media (max-width: 600px) {
+	.itunes-sticky-rank { min-width: 44px; padding: 0 10px; font-size: 15px; }
+	.itunes-sticky-art { width: 40px; height: 40px; }
+	.itunes-sticky-info { padding: 5px 8px; font-size: 12px; }
+	.itunes-sticky-btn { padding: 6px 8px; min-width: 0; font-size: 12px; }
+}
+
