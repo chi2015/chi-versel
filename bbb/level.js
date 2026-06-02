@@ -98,21 +98,22 @@ Crafty.scene("Level", function() {
 		});
 
 		
-		p = 1 / (6 - Math.floor(level/200)); 
+		p = 1 / (6 - Math.floor(level/200));
 		bricks_cnt = Math.random() >= p ? Crafty.math.randomInt(1, 5) : 6;
 		places.sort(function() { return Math.random() - 0.5 });
-		console.log('places', places);
 		var strength = level % 5 ? level : 2*level;
 		if (level % 5 == 0) bricks_cnt = bricks_cnt / 2;
-		Crafty.e("Delay").delay(function() {
+		var spawnDelay = Crafty.e("Delay");
+		spawnDelay.delay(function() {
 		for (var i=0; i<7; i++) {
 			if (places.slice(0, Math.floor(bricks_cnt)).indexOf(i)!==-1) Crafty.e("Brick").initLevel(strength).place(i);
-			if (bricks_cnt > Math.floor(bricks_cnt) && i == places[Math.floor(bricks_cnt)]) Crafty.e("Brick").initLevel(level).place(i); 
+			if (bricks_cnt > Math.floor(bricks_cnt) && i == places[Math.floor(bricks_cnt)]) Crafty.e("Brick").initLevel(level).place(i);
 			if (i == places[Math.floor(bricks_cnt) + (bricks_cnt > Math.floor(bricks_cnt))]) Crafty.e("ExtraBall").place(i);
 		}
-		
+
 		if (!game_over) level_state = "init";
-		
+		spawnDelay.destroy();
+
 		}, Crafty("Global").get(0).tweenDuration);
 
 		if (Crafty("Ball").length < balls_cnt) {
@@ -145,7 +146,6 @@ Crafty.scene("Level", function() {
 	 });
 	 
 	 Crafty.bind("NextPlace", function(ball) {
-		 console.log('next place', next_place);
 		 if (!next_place_defined) {
 			 ball.y = Crafty("Floor").get(0).y - ball.h;
 			 next_place.x = ball.x;
@@ -220,21 +220,21 @@ Crafty.scene("Level", function() {
 		 }
 	 }
 	 
-	 function stageMouseMove(e) { console.log('mouse move', e);
+	 function stageMouseMove(e) {
 	 	 if (mouse_clicked) {
 			 var movementX = e.realX - oldMousePos.x, movementY = e.realY - oldMousePos.y;
-			 var rotation = Crafty("Direction").get(0).rotation;
+			 var rotation = Crafty("Direction").get(0).getRotation();
 			 rotation += -Math.sign(movementX);
 			 rotation += Math.sign(movementY)*Math.sign(270-rotation);
 			 if (rotation <= 180 || rotation >=360) cancelDirection();
-			 else Crafty("Direction").get(0).rotation = rotation;
+			 else Crafty("Direction").get(0).setRotation(rotation);
 			 oldMousePos = {x : e.realX, y : e.realY};
 		}
 	 }
-	 
+
 	 function stageMouseUp(e) {
 	 	if (mouse_clicked) {
-		 var direction = Crafty("Direction").get(0).rotation - 180;
+		 var direction = Crafty("Direction").get(0).getRotation() - 180;
 		 Crafty("Direction").get(0).destroy();
 		 mouse_clicked = false;
 		 startMoving(direction);
@@ -260,7 +260,6 @@ Crafty.scene("Level", function() {
 	 resetGame(1);
 	
 	 function prependInfinity() {
-		console.log('prepend infinity', old_bts, bricks_total_strength);
 	 	if (balls_init == 0 && moving_balls > 0 && old_bts == bricks_total_strength) {
 	 	Crafty("Ball").each(function() {
 	 		if (this.state == "moving") {

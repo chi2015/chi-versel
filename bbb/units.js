@@ -9,10 +9,13 @@ Crafty.c("Brick", {
 		                     .attr({ x: this.x, y: this.y + Crafty("Global").get(0).basicSize * 3, w : this.w })
 		                     .textAlign('center')
 		                     .textColor('#000000')
-		                     .textFont({ size: (7*this.w/12)+'px', 
+		                     .textFont({ size: (7*this.w/12)+'px',
 								         family: 'Arial',
 								         weight: 'bold'}).text('');
-		this.strength = 1;						         
+		this.strength = 1;
+		this.caption.bind("TweenEnd", (function() {
+			if (this.caption.y + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize >= Crafty("Floor").get(0).y) Crafty.trigger("GameOver");
+		}).bind(this));
 	},
 	initLevel : function(level) {
 		this.setLevel(level);
@@ -36,9 +39,7 @@ Crafty.c("Brick", {
 		var diff = {y : this.y + Crafty("Global").get(0).brickWithGap};
 		var diff_caption = {y : this.caption.y + Crafty("Global").get(0).brickWithGap};
 		this.tween(diff, Crafty("Global").get(0).tweenDuration);
-		this.caption.tween(diff_caption, Crafty("Global").get(0).tweenDuration).bind("TweenEnd", function() {
-			if (diff.y + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize >= Crafty("Floor").get(0).y) Crafty.trigger("GameOver");
-	}.bind(this));
+		this.caption.tween(diff_caption, Crafty("Global").get(0).tweenDuration);
 	},
 	damage : function() {
 		this.strength--;
@@ -67,7 +68,7 @@ Crafty.c("Ball", {
 		this.onHit("ExtraBall", function(balls) { balls[0].obj.picked(); });
 		this.state = "init";
 		this.speed = Crafty("Global").get(0).basicSpeed;
-		
+
 	},
 	place : function(x, y) {
 		this.x = x;
@@ -183,13 +184,107 @@ Crafty.c("Floor", {
 
 Crafty.c("Direction", {
 	init : function() {
-		console.log('init direction', Crafty.viewport.width);
-		this.addComponent("Line");
-		this.x = Crafty("Ball").get(0).x + Crafty("Ball").get(0).w / 2;
-		this.y = Crafty("Ball").get(0).y + Crafty("Ball").get(0).w / 2;
-		this.w = Crafty.viewport.width;
-		this.h = Math.max(1, Crafty("Global").get(0).basicSize / 2);
-		this.rotation = 270;
+		this.addComponent("2D");
+		var ball = Crafty("Ball").get(0);
+		this.x = ball.x + ball.w / 2;
+		this.y = ball.y + ball.h / 2;
+		this._aimRotation = 270;
+		this._dashes = [];
+		this._rebuild();
+	},
+	remove : function() {
+		this._clearDashes();
+	},
+	getRotation : function() {
+		return this._aimRotation;
+	},
+	setRotation : function(r) {
+		this._aimRotation = r;
+		this._rebuild();
+	},
+	_clearDashes : function() {
+		for (var i = 0; i < this._dashes.length; i++) this._dashes[i].destroy();
+		this._dashes = [];
+	},
+	_rebuild : function() {
+		this._clearDashes();
+		var direction = this._aimRotation - 180;
+		var dx = -Math.cos(Math.PI * direction / 180);
+		var dy = -Math.sin(Math.PI * direction / 180);
+		var segments = this._computeSegments(this.x, this.y, dx, dy);
+		this._drawDashes(segments);
+	},
+	_computeSegments : function(x, y, dx, dy) {
+		var MAX_BOUNCES = 4;
+		var MAX_LEN = (Crafty.viewport.width + Crafty.viewport.height) * 2;
+		var EPS = 0.5;
+		var ball = Crafty("Ball").get(0);
+		var r = ball.w / 2;
+		var leftX = Crafty("LeftWall").get(0).x + r;
+		var rightX = Crafty("RightWall").get(0).x - r;
+		var roofY = Crafty("Roof").get(0).y + Crafty("Roof").get(0).h + r;
+		var floorY = Crafty("Floor").get(0).y - r;
+		var bricks = Crafty("Brick").get();
+		var segments = [];
+		var totalLen = 0;
+		for (var i = 0; i <= MAX_BOUNCES && totalLen < MAX_LEN; i++) {
+			var tBest = Infinity, hit = null, t;
+			if (dx < 0) { t = (leftX - x) / dx; if (t > EPS && t < tBest) { tBest = t; hit = "L"; } }
+			else if (dx > 0) { t = (rightX - x) / dx; if (t > EPS && t < tBest) { tBest = t; hit = "R"; } }
+			if (dy < 0) { t = (roofY - y) / dy; if (t > EPS && t < tBest) { tBest = t; hit = "T"; } }
+			else if (dy > 0) { t = (floorY - y) / dy; if (t > EPS && t < tBest) { tBest = t; hit = "B"; } }
+			var dxSafe = dx === 0 ? 1e-9 : dx;
+			var dySafe = dy === 0 ? 1e-9 : dy;
+			for (var b = 0; b < bricks.length; b++) {
+				var brk = bricks[b];
+				var bxMin = brk.x - r, bxMax = brk.x + brk.w + r;
+				var byMin = brk.y - r, byMax = brk.y + brk.h + r;
+				var tx1 = (bxMin - x) / dxSafe, tx2 = (bxMax - x) / dxSafe;
+				var ty1 = (byMin - y) / dySafe, ty2 = (byMax - y) / dySafe;
+				var txMin = Math.min(tx1, tx2), txMax = Math.max(tx1, tx2);
+				var tyMin = Math.min(ty1, ty2), tyMax = Math.max(ty1, ty2);
+				var tEnter = Math.max(txMin, tyMin), tExit = Math.min(txMax, tyMax);
+				if (tEnter > tExit || tExit < EPS || tEnter < EPS) continue;
+				if (tEnter >= tBest) continue;
+				tBest = tEnter;
+				hit = txMin > tyMin ? "BX" : "BY";
+			}
+			if (tBest === Infinity) break;
+			var endX = x + dx * tBest;
+			var endY = y + dy * tBest;
+			segments.push([x, y, endX, endY]);
+			totalLen += tBest;
+			if (hit === "B") break;
+			if (hit === "L" || hit === "R" || hit === "BX") dx = -dx;
+			if (hit === "T" || hit === "BY") dy = -dy;
+			x = endX + dx * EPS;
+			y = endY + dy * EPS;
+		}
+		return segments;
+	},
+	_drawDashes : function(segments) {
+		var basic = Crafty("Global").get(0).basicSize;
+		var dashLen = Math.max(4, basic * 2);
+		var gapLen = Math.max(3, basic);
+		var thickness = Math.max(1, basic / 2);
+		for (var s = 0; s < segments.length; s++) {
+			var seg = segments[s];
+			var sx = seg[0], sy = seg[1], ex = seg[2], ey = seg[3];
+			var segDx = ex - sx, segDy = ey - sy;
+			var segLen = Math.sqrt(segDx * segDx + segDy * segDy);
+			if (segLen < 1) continue;
+			var ndx = segDx / segLen, ndy = segDy / segLen;
+			var angleDeg = Math.atan2(segDy, segDx) * 180 / Math.PI;
+			for (var pos = 0; pos < segLen; pos += dashLen + gapLen) {
+				var dashThisLen = Math.min(dashLen, segLen - pos);
+				if (dashThisLen < 1) break;
+				var dash = Crafty.e("Line")
+					.attr({ x: sx + ndx * pos, y: sy + ndy * pos - thickness / 2, w: dashThisLen, h: thickness });
+				dash.origin(0, thickness / 2);
+				dash.rotation = angleDeg;
+				this._dashes.push(dash);
+			}
+		}
 	}
 });
 
