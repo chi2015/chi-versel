@@ -78,7 +78,7 @@ ul.projects-menu li a:hover, ul.projects-menu li a:visited {
 .albums
 {
 	background-color: #f6f1e6;
-	color: #9a3a1c;
+	color: #0e166e;
 	font-family: "Fraunces", "Newsreader", Georgia, serif;
 	font-size: 32px;
 	font-weight: 600;
@@ -87,7 +87,7 @@ ul.projects-menu li a:hover, ul.projects-menu li a:visited {
 .albums:hover
 {
 	background-color: #ece4d2;
-	color: #7d2d12;
+	color: #3c4391;
 }
 
 .citadels {
