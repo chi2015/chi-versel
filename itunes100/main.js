@@ -131,6 +131,20 @@ const setActiveTrack = (num, playing) => {
 	}
 	if (playBtn) playBtn.textContent = playing ? 'Pause' : 'Play';
 
+	const infoInner = document.querySelector('.itunes-sticky-info-inner');
+	const infoOuter = document.querySelector('.itunes-sticky-info');
+	if (infoInner && infoOuter) {
+		infoInner.classList.remove('is-marquee');
+		infoInner.style.removeProperty('--marquee-offset');
+		requestAnimationFrame(() => {
+			const overflow = infoOuter.scrollWidth - infoOuter.clientWidth;
+			if (overflow > 0) {
+				infoInner.style.setProperty('--marquee-offset', '-' + overflow + 'px');
+				infoInner.classList.add('is-marquee');
+			}
+		});
+	}
+
 	currentPlayingNum = num;
 	observeActiveRow(row);
 }
