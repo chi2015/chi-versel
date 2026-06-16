@@ -270,6 +270,12 @@ Crafty.scene("Level", function() {
 	 	if (sound_btn.isAt(pos.realX, pos.realY)) { sound_btn.trigger("Click"); return; }
 	 	if (down_btn && down_btn.isAt(pos.realX, pos.realY)) { down_btn.trigger("Click"); return; }
 	 	if (forward_btn && forward_btn.isAt(pos.realX, pos.realY)) { forward_btn.trigger("MouseDown"); return; }
+	 	var bg = Crafty("Background").get(0);
+	 	if (bg) {
+	 		for (var i = 0; i < bg.buttons.length; i++) {
+	 			if (bg.buttons[i].isAt(pos.realX, pos.realY)) { bg.buttons[i].trigger("Click"); return; }
+	 		}
+	 	}
 	 	stageMouseDown(pos);
 	 });
 
