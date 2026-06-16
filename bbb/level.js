@@ -82,7 +82,9 @@ Crafty.scene("Level", function() {
 	 }
 	 
 	 Crafty.bind("PlaySound", function(sound) {
-		 if (playSounds) Crafty.audio.play(sound);
+		 if (!playSounds) return;
+		 if (WebAudioSounds && WebAudioSounds.play(sound)) return;
+		 Crafty.audio.play(sound);
 	 });
 	 	 
 	 Crafty.bind("NextLevel", function() {
@@ -123,7 +125,9 @@ Crafty.scene("Level", function() {
 		}
 		
 		balls_init = balls_cnt;
-		balls_cnt_text.x = next_place.x + Crafty("Global").get(0).basicSize;
+		var labelW = Crafty("Global").get(0).basicSize * 14;
+		balls_cnt_text.w = labelW;
+		balls_cnt_text.x = Math.min(next_place.x + Crafty("Global").get(0).basicSize, Crafty.viewport.width - labelW);
 		
 		next_place_defined = false;
 		next_place = {};
@@ -212,6 +216,7 @@ Crafty.scene("Level", function() {
 	 var oldMousePos = {};
 	 
 	 function stageMouseDown(e) {
+	 	if (e.isTrusted === false) return; // ignore Crafty mimicMouse synthetic events
 	 	if (!Crafty.isPaused() && level_state == "init" && !pause_btn.isAt(e.realX, e.realY) && !sound_btn.isAt(e.realX, e.realY))
 		 {
 			 Crafty.e("Direction");
@@ -219,8 +224,9 @@ Crafty.scene("Level", function() {
 			 oldMousePos = {x : e.realX, y : e.realY};
 		 }
 	 }
-	 
+
 	 function stageMouseMove(e) {
+	 	if (e.isTrusted === false) return; // ignore Crafty mimicMouse synthetic events
 	 	 if (mouse_clicked) {
 			 var movementX = e.realX - oldMousePos.x, movementY = e.realY - oldMousePos.y;
 			 var rotation = Crafty("Direction").get(0).getRotation();
@@ -233,6 +239,7 @@ Crafty.scene("Level", function() {
 	 }
 
 	 function stageMouseUp(e) {
+	 	if (e.isTrusted === false) return; // ignore Crafty mimicMouse synthetic events
 	 	if (mouse_clicked) {
 		 var direction = Crafty("Direction").get(0).getRotation() - 180;
 		 Crafty("Direction").get(0).destroy();
@@ -240,16 +247,42 @@ Crafty.scene("Level", function() {
 		 startMoving(direction);
 		}
 	 }
-	 
+
 	 function cancelDirection() {
 		 if (Crafty("Direction").length) Crafty("Direction").get(0).destroy();
 		 mouse_clicked = false;
 	 }
-	 
+
+	 function getTouchPos(e) {
+	 	var t = e.touches[0] || e.changedTouches[0];
+	 	var rect = Crafty.stage.elem.getBoundingClientRect();
+	 	return { realX: t.clientX - rect.left, realY: t.clientY - rect.top };
+	 }
+
 	 Crafty.addEvent(this, Crafty.stage.elem, "mousedown", stageMouseDown);
 	 Crafty.addEvent(this, Crafty.stage.elem, "mousemove", stageMouseMove);
 	 Crafty.addEvent(this, Crafty.stage.elem, "mouseup", stageMouseUp);
 	 Crafty.addEvent(this, Crafty.stage.elem, "mouseout", cancelDirection);
+
+	 Crafty.addEvent(this, Crafty.stage.elem, "touchstart", function(e) {
+	 	var pos = getTouchPos(e);
+	 	if (pause_btn.isAt(pos.realX, pos.realY)) { pause_btn.trigger("Click"); return; }
+	 	if (sound_btn.isAt(pos.realX, pos.realY)) { sound_btn.trigger("Click"); return; }
+	 	if (down_btn && down_btn.isAt(pos.realX, pos.realY)) { down_btn.trigger("Click"); return; }
+	 	if (forward_btn && forward_btn.isAt(pos.realX, pos.realY)) { forward_btn.trigger("MouseDown"); return; }
+	 	stageMouseDown(pos);
+	 });
+
+	 Crafty.addEvent(this, Crafty.stage.elem, "touchmove", function(e) {
+	 	e.preventDefault();
+	 	stageMouseMove(getTouchPos(e));
+	 });
+
+	 Crafty.addEvent(this, Crafty.stage.elem, "touchend", function(e) {
+	 	var pos = getTouchPos(e);
+	 	if (forward_btn && forward_btn.isAt(pos.realX, pos.realY)) { forward_btn.trigger("MouseUp"); return; }
+	 	stageMouseUp(pos);
+	 });
 	 
 	 function resetGame(r) {
 		resetVars(r);

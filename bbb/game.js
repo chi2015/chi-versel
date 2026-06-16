@@ -1,5 +1,51 @@
 'use strict';
 
+var WebAudioSounds = (function() {
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+
+    var ctx;
+    try { ctx = new AudioCtx(); } catch(e) { return null; }
+
+    var buffers = {};
+    var names = ["start", "pause", "kick", "bubble", "pick", "over", "clear"];
+
+    names.forEach(function(name) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "sounds/" + name + ".mp3", true);
+        xhr.responseType = "arraybuffer";
+        xhr.onload = function() {
+            if (!xhr.response) return;
+            // Use callback form — older iOS Safari does not return a Promise from decodeAudioData
+            ctx.decodeAudioData(xhr.response, function(buf) {
+                buffers[name] = buf;
+            }, function() {});
+        };
+        xhr.send();
+    });
+
+    function unlock() {
+        if (ctx.state === "suspended") ctx.resume();
+    }
+    document.addEventListener("touchstart", unlock, { once: true, capture: true });
+    document.addEventListener("mousedown",  unlock, { once: true, capture: true });
+
+    return {
+        play: function(name) {
+            var buf = buffers[name];
+            if (!buf) return false;
+            try {
+                if (ctx.state === "suspended") ctx.resume();
+                var src = ctx.createBufferSource();
+                src.buffer = buf;
+                src.connect(ctx.destination);
+                src.start(0);
+                return true;
+            } catch(e) { return false; }
+        }
+    };
+})();
+
 var assetsObj = {
     "sprites": {
         "ball.png": {

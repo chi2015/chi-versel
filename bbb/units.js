@@ -64,7 +64,7 @@ Crafty.c("Ball", {
 		this.onHit("RightWall", function() {this.changeDirection(180 - this.direction); }.bind(this));
 		this.onHit("Roof", function() {this.changeDirection( - this.direction); }.bind(this));
 		this.onHit("Floor", function() { if (this.state=="moving") this.stop(); }.bind(this));
-		this.onHit("Brick", function(bricks) { this.hitBrick(bricks[0].obj); }.bind(this));
+		this.onHit("Brick", function(bricks) { this.hitBrick(bricks); }.bind(this));
 		this.onHit("ExtraBall", function(balls) { balls[0].obj.picked(); });
 		this.state = "init";
 		this.speed = Crafty("Global").get(0).basicSpeed;
@@ -97,10 +97,26 @@ Crafty.c("Ball", {
 		Crafty.trigger("NextPlace", this);
 		Crafty.trigger("BallStop");		
 	},
-	hitBrick : function(brick) {
-		if (this.y - this.dy <= brick.y || this.y - this.dy >= brick.y + brick.h) this.changeDirection(-this.direction);
-		else this.changeDirection(180 - this.direction); 
-		brick.damage();
+	hitBrick : function(bricks) {
+		var flipX = 0, flipY = 0;
+		for (var i = 0; i < bricks.length; i++) {
+			var brick = bricks[i].obj;
+			var prevY = this.y - this.dy;
+			var prevX = this.x - this.dx;
+			if (prevY + this.h <= brick.y || prevY >= brick.y + brick.h) {
+				flipY++;
+			} else if (prevX + this.w <= brick.x || prevX >= brick.x + brick.w) {
+				flipX++;
+			} else {
+				// Corner/gap ambiguity: the axis with smaller penetration depth is the one entered first
+				var penY = Math.abs(this.dy) < 0.001 ? Infinity : (this.dy > 0 ? (this.y + this.h) - brick.y : brick.y + brick.h - this.y);
+				var penX = Math.abs(this.dx) < 0.001 ? Infinity : (this.dx > 0 ? (this.x + this.w) - brick.x : brick.x + brick.w - this.x);
+				if (penY <= penX) flipY++; else flipX++;
+			}
+			brick.damage();
+		}
+		if (flipY >= flipX) this.changeDirection(-this.direction);
+		else this.changeDirection(180 - this.direction);
 	},
 	faster : function() {
 		if (this.state != "moving") return;
@@ -215,7 +231,7 @@ Crafty.c("Direction", {
 		this._drawDashes(segments);
 	},
 	_computeSegments : function(x, y, dx, dy) {
-		var MAX_BOUNCES = 4;
+		var MAX_BOUNCES = 2;
 		var MAX_LEN = (Crafty.viewport.width + Crafty.viewport.height) * 2;
 		var EPS = 0.5;
 		var ball = Crafty("Ball").get(0);
