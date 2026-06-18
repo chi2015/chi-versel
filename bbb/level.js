@@ -145,7 +145,7 @@ Crafty.scene("Level", function() {
 		if (moving_balls == 0) {
 			level_state = "stop";
 			destroyButtons();
-			Crafty.trigger("NextLevel"); 
+			if (!game_over) Crafty.trigger("NextLevel");
 		}
 	 });
 	 

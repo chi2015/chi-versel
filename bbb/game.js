@@ -24,18 +24,28 @@ var WebAudioSounds = (function() {
         xhr.send();
     });
 
-    function unlock() {
-        if (ctx.state === "suspended") ctx.resume();
+    // Mobile browsers (iOS Safari especially) auto-suspend an idle AudioContext
+    // during normal gameplay gaps. resume() only resolves quickly when called
+    // synchronously from inside a trusted user-gesture handler — calling it from
+    // game/physics code (e.g. a collision callback) makes iOS deprioritize the
+    // resume for 1-3s, and any source already start()-ed just sits buffered until
+    // resume actually completes. So keep the context alive continuously from every
+    // real gesture instead of resuming reactively when a sound needs to play.
+    function keepAlive() {
+        if (ctx.state !== "running") ctx.resume();
     }
-    document.addEventListener("touchstart", unlock, { once: true, capture: true });
-    document.addEventListener("mousedown",  unlock, { once: true, capture: true });
+    ["touchstart", "touchend", "mousedown", "mouseup"].forEach(function(type) {
+        document.addEventListener(type, keepAlive, { capture: true });
+    });
+    document.addEventListener("visibilitychange", function() {
+        if (!document.hidden) keepAlive();
+    });
 
     return {
         play: function(name) {
             var buf = buffers[name];
-            if (!buf) return false;
+            if (!buf || ctx.state !== "running") return false;
             try {
-                if (ctx.state === "suspended") ctx.resume();
                 var src = ctx.createBufferSource();
                 src.buffer = buf;
                 src.connect(ctx.destination);
