@@ -217,7 +217,7 @@ Crafty.scene("Level", function() {
 	 
 	 function stageMouseDown(e) {
 	 	if (e.isTrusted === false) return; // ignore Crafty mimicMouse synthetic events
-	 	if (!Crafty.isPaused() && level_state == "init" && !pause_btn.isAt(e.realX, e.realY) && !sound_btn.isAt(e.realX, e.realY))
+	 	if (!mouse_clicked && !Crafty.isPaused() && level_state == "init" && !pause_btn.isAt(e.realX, e.realY) && !sound_btn.isAt(e.realX, e.realY))
 		 {
 			 Crafty.e("Direction");
 			 mouse_clicked = true;
@@ -242,14 +242,14 @@ Crafty.scene("Level", function() {
 	 	if (e.isTrusted === false) return; // ignore Crafty mimicMouse synthetic events
 	 	if (mouse_clicked) {
 		 var direction = Crafty("Direction").get(0).getRotation() - 180;
-		 Crafty("Direction").get(0).destroy();
+		 Crafty("Direction").each(function() { this.destroy(); });
 		 mouse_clicked = false;
 		 startMoving(direction);
 		}
 	 }
 
 	 function cancelDirection() {
-		 if (Crafty("Direction").length) Crafty("Direction").get(0).destroy();
+		 Crafty("Direction").each(function() { this.destroy(); });
 		 mouse_clicked = false;
 	 }
 
@@ -289,6 +289,8 @@ Crafty.scene("Level", function() {
 	 	if (forward_btn && forward_btn.isAt(pos.realX, pos.realY)) { forward_btn.trigger("MouseUp"); return; }
 	 	stageMouseUp(pos);
 	 });
+
+	 Crafty.addEvent(this, Crafty.stage.elem, "touchcancel", cancelDirection);
 	 
 	 function resetGame(r) {
 		resetVars(r);
