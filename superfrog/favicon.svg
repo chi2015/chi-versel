@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- Background tile -->
+  <rect width="32" height="32" fill="#1a1a2e"/>
+  <rect x="1" y="1" width="30" height="30" fill="#16213e"/>
+
+  <!-- Cape (behind body, red superhero wings) -->
+  <rect x="2"  y="12" width="8"  height="15" fill="#c0392b"/>
+  <rect x="22" y="12" width="8"  height="15" fill="#c0392b"/>
+  <rect x="4"  y="10" width="6"  height="17" fill="#E74C3C"/>
+  <rect x="22" y="10" width="6"  height="17" fill="#E74C3C"/>
+  <!-- Cape highlight -->
+  <rect x="4"  y="10" width="2"  height="17" fill="#ff6b6b"/>
+  <rect x="26" y="10" width="2"  height="17" fill="#ff6b6b"/>
+
+  <!-- Body (green) -->
+  <rect x="9"  y="10" width="14" height="17" fill="#2ECC40"/>
+  <!-- Head -->
+  <rect x="10" y="7"  width="12" height="5"  fill="#2ECC40"/>
+  <rect x="11" y="5"  width="10" height="3"  fill="#2ECC40"/>
+  <!-- Head top bumps (frog eyes protrusions) -->
+  <rect x="10" y="4"  width="4"  height="2"  fill="#27ae60"/>
+  <rect x="18" y="4"  width="4"  height="2"  fill="#27ae60"/>
+
+  <!-- Belly (yellow) -->
+  <rect x="11" y="17" width="10" height="8"  fill="#F4D03F"/>
+  <!-- Belly sheen -->
+  <rect x="12" y="18" width="4"  height="5"  fill="#f7dc6f"/>
+
+  <!-- Eyes (white) -->
+  <rect x="9"  y="8"  width="6"  height="6"  fill="#ffffff"/>
+  <rect x="17" y="8"  width="6"  height="6"  fill="#ffffff"/>
+  <!-- Pupils -->
+  <rect x="10" y="9"  width="4"  height="4"  fill="#111111"/>
+  <rect x="18" y="9"  width="4"  height="4"  fill="#111111"/>
+  <!-- Iris (dark green ring) -->
+  <rect x="10" y="9"  width="4"  height="4"  fill="#1a5c00" opacity="0.35"/>
+  <!-- Pupil dot -->
+  <rect x="11" y="10" width="2"  height="2"  fill="#000000"/>
+  <rect x="19" y="10" width="2"  height="2"  fill="#000000"/>
+  <!-- Eye shine -->
+  <rect x="10" y="9"  width="1"  height="1"  fill="#ffffff"/>
+  <rect x="18" y="9"  width="1"  height="1"  fill="#ffffff"/>
+
+  <!-- Nostrils -->
+  <rect x="13" y="14" width="2"  height="1"  fill="#1a7a28"/>
+  <rect x="17" y="14" width="2"  height="1"  fill="#1a7a28"/>
+
+  <!-- Smile -->
+  <rect x="13" y="23" width="6"  height="1"  fill="#1a7a28"/>
+  <rect x="12" y="24" width="2"  height="1"  fill="#1a7a28"/>
+  <rect x="18" y="24" width="2"  height="1"  fill="#1a7a28"/>
+
+  <!-- Legs -->
+  <rect x="9"  y="27" width="5"  height="3"  fill="#2ECC40"/>
+  <rect x="18" y="27" width="5"  height="3"  fill="#2ECC40"/>
+  <!-- Feet (wide, frog style) -->
+  <rect x="7"  y="29" width="7"  height="2"  fill="#27ae60"/>
+  <rect x="18" y="29" width="7"  height="2"  fill="#27ae60"/>
+</svg>
