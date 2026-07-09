@@ -115,9 +115,9 @@
 // ============================================================
 const W = 800, H = 480;
 const TILE = 32;
-const LEVEL_COLS = 60;
+let LEVEL_COLS = 60;
 const LEVEL_ROWS = 15;
-const LEVEL_W = LEVEL_COLS * TILE;
+let LEVEL_W = LEVEL_COLS * TILE;
 const HUD_H = 48;
 const GAME_H = H - HUD_H; // 432px
 
@@ -155,15 +155,18 @@ const GS = {
   hiScore: parseInt(localStorage.getItem('superfrog_hi') || '0'),
   coins: 0,
   particles: [],
-  cameraX: 0
+  cameraX: 0,
+  levelIndex: 0,
+  levelName: 'FOREST 1-1',
+  playerStart: { col: 2, row: 9 }
 };
 
 // ============================================================
-// === LEVEL MAP ===
+// === LEVEL MAPS ===
 // ============================================================
 // 0=empty,1=ground,2=platform(one-way),3=brick,4=coin,
 // 5=cherry,6=mushroom,7=potion,8=spring,9=flag,10=bee,11=snail
-const LEVEL_MAP = [
+const LEVEL1_MAP = [
   // row 0 (top, sky)
   [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0],
   // row 1
@@ -195,6 +198,63 @@ const LEVEL_MAP = [
   // row 14
   [1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 0,0,0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1],
 ];
+
+// FOREST 1-2: bigger (100 cols vs 60) and harder — 4 pits (up to 5 tiles
+// wide), 9 enemies, narrower platforms, and a staircase climb to the flag.
+const LEVEL2_MAP = [
+  // row 0
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0],
+  // row 1
+  [0,0,0,0,0,0,4,0,0,0, 0,0,0,0,0,0,0,4,0,0, 0,0,0,0,0,0,0,0,0,4, 0,0,0,0,0,0,0,0,0,0, 0,4,0,0,0,0,0,0,0,0, 0,0,0,4,0,0,0,0,0,0, 0,0,0,0,0,4,0,0,0,0, 0,0,0,0,0,0,0,4,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,4,0,0,0,0],
+  // row 2
+  [0,0,0,0,0,4,0,4,0,0, 0,0,0,0,0,0,4,0,4,0, 0,0,0,0,0,0,0,0,4,0, 4,0,0,0,0,0,0,0,0,0, 4,0,4,0,0,0,0,0,0,0, 0,0,4,0,4,0,0,0,0,0, 0,0,0,0,4,0,4,0,0,0, 0,0,0,0,0,0,4,0,4,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,4,0,4,0,0,0],
+  // row 3
+  [0,0,0,0,4,0,0,0,4,0, 0,0,0,0,0,4,0,0,0,4, 0,0,0,0,0,0,0,4,0,0, 0,4,0,0,0,0,0,0,0,4, 0,0,0,4,0,0,0,0,0,0, 0,4,0,0,0,4,0,0,0,0, 0,0,0,4,0,0,0,4,0,0, 0,0,0,0,0,4,0,0,0,4, 0,0,0,0,0,0,0,0,0,0, 0,0,0,4,0,0,0,4,0,0],
+  // row 4
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,5,0,5,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,5, 0,5,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0],
+  // row 5
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,7,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0],
+  // row 6
+  [0,0,0,0,0,0,0,0,0,0, 0,0,2,2,2,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,2,2, 2,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,2,2,2,0,0,0,0,0,0, 0,0,0,0,0,0,0,6,0,0],
+  // row 7
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,2,2, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,2,2,2,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,11,0,0,0,9,0],
+  // row 8
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,2,2,2,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,2,2,0, 0,0,0,0,0,0,0,0,0,0, 10,0,1,1,1,1,1,1,1,1],
+  // row 9
+  [0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,2,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,8,0,0,0,0, 0,0,0,0,6,2,2,0,0,0, 0,0,0,0,0,0,0,0,0,2, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+  // row 10
+  [0,0,0,0,0,0,0,0,11,0, 0,0,0,0,0,0,10,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,11,0,0,0, 0,0,10,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,11,0,0,10,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,11,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+  // row 11
+  [1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,0,0,0,0,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,0,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+  // row 12
+  [1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,0,0,0,0,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,0,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+  // row 13
+  [1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,0,0,0,0,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,0,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+  // row 14
+  [1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,0,0,0,0,1,1, 1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,0,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,0,0, 0,0,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,0,0,0,1, 1,1,1,1,1,1,1,1,1,1],
+];
+
+// ============================================================
+// === LEVEL REGISTRY & LOADING ===
+// ============================================================
+const LEVELS = [
+  { name: 'FOREST 1-1', cols: 60, map: LEVEL1_MAP, start: { col: 2, row: 9 }, startTime: 300 },
+  { name: 'FOREST 1-2', cols: 100, map: LEVEL2_MAP, start: { col: 2, row: 9 }, startTime: 420 }
+];
+
+function cloneLevelMap(map) { return map.map(row => row.slice()); }
+
+let LEVEL_MAP = cloneLevelMap(LEVELS[0].map);
+
+function loadLevel(idx) {
+  const lvl = LEVELS[idx];
+  LEVEL_MAP = cloneLevelMap(lvl.map);
+  LEVEL_COLS = lvl.cols;
+  LEVEL_W = LEVEL_COLS * TILE;
+  GS.levelIndex = idx;
+  GS.levelName = lvl.name;
+  GS.playerStart = lvl.start;
+}
 
 // ============================================================
 // === AUDIO ENGINE (Web Audio API procedural sounds) ===
@@ -511,47 +571,64 @@ function drawBackground(ctx, camX) {
   drawClouds(ctx, camX * 0.4, 2);
 }
 
+// Deterministic pseudo-random in [0,1) from an integer seed - lets the
+// parallax layers repeat forever without depending on the level's width.
+function bgHash(n) {
+  const x = Math.sin(n * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 function drawClouds(ctx, offset, layer) {
   ctx.fillStyle = layer === 1 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.9)';
-  const cloudData = layer === 1
-    ? [[80,60],[220,40],[400,80],[600,50],[780,70],[1000,45],[1200,65],[1500,55],[1800,75]]
-    : [[150,100],[350,120],[550,90],[750,110],[1000,95],[1300,115],[1600,100],[1900,90]];
-  cloudData.forEach(([cx,cy]) => {
-    const x = ((cx - offset) % (LEVEL_W + W) + LEVEL_W + W) % (LEVEL_W + W) - 100;
-    if (x < -100 || x > W+100) return;
-    const s = layer === 1 ? 1 : 1.2;
+  const period = layer === 1 ? 260 : 300;
+  const s = layer === 1 ? 1 : 1.2;
+  const i0 = Math.floor((offset - 150) / period) - 1;
+  const i1 = Math.floor((offset + W + 150) / period) + 1;
+  for (let i = i0; i <= i1; i++) {
+    const cx = i * period + bgHash(i * 7 + layer) * (period * 0.6);
+    const cy = layer === 1 ? 40 + bgHash(i * 3 + layer) * 45 : 85 + bgHash(i * 5 + layer) * 40;
+    const x = cx - offset;
+    if (x < -100 || x > W + 100) continue;
     ctx.beginPath();
     ctx.arc(x, cy, 25*s, 0, Math.PI*2); ctx.fill();
     ctx.arc(x+28*s, cy+5, 20*s, 0, Math.PI*2); ctx.fill();
     ctx.arc(x-22*s, cy+5, 18*s, 0, Math.PI*2); ctx.fill();
     ctx.arc(x+8*s, cy-15*s, 18*s, 0, Math.PI*2); ctx.fill();
-  });
+  }
 }
 
 function drawHills(ctx, offset) {
-  ctx.fillStyle = '#3a6b2f';
-  const hills = [[200,220,180],[450,200,150],[700,230,200],[1000,210,160],[1300,225,190],[1600,205,170],[1900,220,180]];
-  hills.forEach(([cx,cy,r]) => {
-    const x = ((cx - offset) % (LEVEL_W + W) + LEVEL_W + W) % (LEVEL_W + W);
-    ctx.beginPath();
-    ctx.arc(x, cy, r, Math.PI, 0);
-    ctx.fill();
-  });
-  ctx.fillStyle = '#4a8a3a';
-  const hills2 = [[350,235,130],[600,215,120],[850,240,150],[1150,220,140],[1450,230,125]];
-  hills2.forEach(([cx,cy,r]) => {
-    const x = ((cx - offset) % (LEVEL_W + W) + LEVEL_W + W) % (LEVEL_W + W);
-    ctx.beginPath();
-    ctx.arc(x, cy, r, Math.PI, 0);
-    ctx.fill();
+  const layers = [
+    { color: '#3a6b2f', period: 300, cy: 220, cyVar: 20, rMin: 150, rVar: 60 },
+    { color: '#4a8a3a', period: 260, cy: 225, cyVar: 15, rMin: 120, rVar: 35 }
+  ];
+  layers.forEach((L, li) => {
+    ctx.fillStyle = L.color;
+    const span = L.rVar + L.rMin;
+    const i0 = Math.floor((offset - span) / L.period) - 1;
+    const i1 = Math.floor((offset + W + span) / L.period) + 1;
+    for (let i = i0; i <= i1; i++) {
+      const cx = i * L.period + bgHash(i * 11 + li * 5) * (L.period * 0.5);
+      const cy = L.cy + bgHash(i * 13 + li * 5) * L.cyVar;
+      const r = L.rMin + bgHash(i * 17 + li * 5) * L.rVar;
+      const x = cx - offset;
+      if (x < -r - 20 || x > W + r + 20) continue;
+      ctx.beginPath();
+      ctx.arc(x, cy, r, Math.PI, 0);
+      ctx.fill();
+    }
   });
 }
 
 function drawTrees(ctx, offset) {
-  const trees = [[180,260],[320,250],[420,265],[600,255],[720,260],[900,250],[1050,258],[1200,265],[1400,252],[1600,260],[1800,255]];
-  trees.forEach(([cx,cy]) => {
-    const x = ((cx - offset) % (LEVEL_W + W) + LEVEL_W + W) % (LEVEL_W + W);
-    if (x < -50 || x > W+50) return;
+  const period = 150;
+  const i0 = Math.floor((offset - 50) / period) - 1;
+  const i1 = Math.floor((offset + W + 50) / period) + 1;
+  for (let i = i0; i <= i1; i++) {
+    const cx = i * period + bgHash(i * 19) * (period * 0.6);
+    const cy = 255 + bgHash(i * 23) * 15;
+    const x = cx - offset;
+    if (x < -50 || x > W + 50) continue;
     // trunk
     ctx.fillStyle = '#5c3d1e';
     ctx.fillRect(x-4, cy, 8, 30);
@@ -562,7 +639,7 @@ function drawTrees(ctx, offset) {
     ctx.beginPath(); ctx.arc(x+15, cy+8, 18, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = '#2d6b1a';
     ctx.beginPath(); ctx.arc(x, cy-8, 16, 0, Math.PI*2); ctx.fill();
-  });
+  }
 }
 
 // ============================================================
@@ -737,8 +814,7 @@ function createEnemy(type, col, row) {
 // === INIT GAME SCENE ===
 // ============================================================
 function initGame() {
-  GS.score = 0;
-  GS.timeLeft = CFG.startTime;
+  GS.timeLeft = LEVELS[GS.levelIndex].startTime;
   GS.paused = false;
   GS.particles = [];
   collected = new Set();
@@ -746,7 +822,7 @@ function initGame() {
   animFrame = 0;
   lastTime = 0;
 
-  player = createPlayer(2 * TILE, 9 * TILE + HUD_H - 30);
+  player = createPlayer(GS.playerStart.col * TILE, GS.playerStart.row * TILE + HUD_H - 30);
 
   enemies = [];
   // Scan for enemy spawns
@@ -782,7 +858,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') KEYS.up = true;
   if (e.key === ' ') { e.preventDefault(); KEYS.space = true; }
   if (e.key === 'Escape') KEYS.esc = true;
-  if (e.key === 'Enter' && currentScene !== 'Game') startGame();
+  if (e.key === 'Enter' && currentScene === 'MainMenu') startGame();
 });
 document.addEventListener('keyup', e => {
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') KEYS.left = false;
@@ -945,8 +1021,8 @@ function hurtPlayer() {
     setTimeout(() => showGameOver(), 1500);
   } else {
     // Reset player position
-    player.x = 2 * TILE;
-    player.y = 9 * TILE + HUD_H - 30;
+    player.x = GS.playerStart.col * TILE;
+    player.y = GS.playerStart.row * TILE + HUD_H - 30;
     player.vx = 0; player.vy = 0;
     GS.cameraX = 0;
   }
@@ -1112,12 +1188,14 @@ function checkCollectibles() {
 function updateHUD() {
   const hudLives = document.getElementById('hud-lives');
   const hudScore = document.getElementById('hud-score');
+  const hudWorld = document.getElementById('hud-world');
   const hudTimer = document.getElementById('hud-timer');
 
   let livesStr = '';
   for (let i = 0; i < GS.lives; i++) livesStr += '🐸';
   if (hudLives) hudLives.textContent = livesStr + ' ×' + GS.lives;
   if (hudScore) hudScore.textContent = 'SCORE: ' + String(GS.score).padStart(6, '0');
+  if (hudWorld) hudWorld.textContent = GS.levelName;
   if (hudTimer) {
     hudTimer.textContent = 'TIME: ' + Math.ceil(GS.timeLeft);
     hudTimer.className = 'timer' + (GS.timeLeft < 60 ? ' danger' : '');
@@ -1379,6 +1457,7 @@ function showLevelComplete() {
 
 function drawLevelComplete(ts, dt) {
   const ctx = gameCtx;
+  const isLastLevel = GS.levelIndex >= LEVELS.length - 1;
   drawBackground(ctx, 100);
 
   // Banner slides down
@@ -1388,7 +1467,7 @@ function drawLevelComplete(ts, dt) {
   ctx.fillStyle = '#FFD700';
   ctx.font = '18px "Press Start 2P"';
   ctx.textAlign = 'center';
-  ctx.fillText('LEVEL COMPLETE!', W/2, bannerY + 40);
+  ctx.fillText(isLastLevel ? 'GAME COMPLETE!' : 'LEVEL COMPLETE!', W/2, bannerY + 40);
 
   lcTimer += dt / 16;
 
@@ -1430,7 +1509,7 @@ function drawLevelComplete(ts, dt) {
   drawParticles(ctx, 0, 0);
 
   if (lcBonusDone && lcTimer > 180) {
-    enterScene('MainMenu');
+    nextLevel();
   }
 }
 
@@ -1453,10 +1532,8 @@ function enterScene(name) {
     document.removeEventListener('keydown', menuKeyHandler);
   }
   if (name === 'Game') {
+    loadLevel(GS.levelIndex);
     initGame();
-    GS.lives = CFG.startLives;
-    GS.score = 0;
-    GS.timeLeft = CFG.startTime;
   }
   if (name === 'GameOver') {
     gameOverClock = 0;
@@ -1483,10 +1560,20 @@ function gameOverKeyHandler(e) {
 
 function startGame() {
   document.removeEventListener('keydown', menuKeyHandler);
-  // Reset enemy spawn tiles (they may have been cleared)
-  LEVEL_MAP[10][10] = TILES.ENEMY_BEE;
-  LEVEL_MAP[10][24] = TILES.ENEMY_SNAIL;
+  GS.lives = CFG.startLives;
+  GS.score = 0;
+  GS.levelIndex = 0;
   enterScene('Game');
+}
+
+function nextLevel() {
+  const next = GS.levelIndex + 1;
+  if (next < LEVELS.length) {
+    GS.levelIndex = next;
+    enterScene('Game');
+  } else {
+    enterScene('MainMenu');
+  }
 }
 
 // ============================================================
