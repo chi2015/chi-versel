@@ -95,16 +95,19 @@ var assetsObj = {
 function getViewportSize() {
 	var winWidth = window.innerWidth, winHeight = window.innerHeight,
 	gameBlockWidth, gameBlockHeight;
-	
-	if (winHeight > winWidth) {
-		gameBlockWidth = Math.floor(winWidth/90) * 90;
-		gameBlockHeight = gameBlockWidth * 150 / 90;
-	}
-	else {
+
+	// Fit the fixed 90:150 game board inside the viewport on whichever axis
+	// is the tighter constraint, instead of guessing from orientation alone
+	// (a tablet in portrait can still be too "wide" for a width-based fit,
+	// which pushed the bottom HUD off-screen).
+	gameBlockWidth = Math.floor(winWidth/90) * 90;
+	gameBlockHeight = gameBlockWidth * 150 / 90;
+
+	if (gameBlockHeight > winHeight) {
 		gameBlockHeight = Math.floor(winHeight/150) * 150;
-		gameBlockWidth = gameBlockHeight * 90 /150;
+		gameBlockWidth = gameBlockHeight * 90 / 150;
 	}
-	
+
 	return {width: gameBlockWidth, height: gameBlockHeight};
 }
 

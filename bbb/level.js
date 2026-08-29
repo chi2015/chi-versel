@@ -21,15 +21,15 @@ Crafty.scene("Level", function() {
 	  										  y : Crafty("Global").get(0).basicSize * 2,
 	  										  w : Crafty("Global").get(0).basicSize * 12,
 	  										  h : Crafty("Global").get(0).basicSize * 12}).bind("Click", function() {
-	  										  	if (game_over || Crafty.isPaused()) return;
-	  										  	if (!Crafty.isPaused()) Crafty.e("Background").setTitle("GAME PAUSED")
-	  										  	.addButton("resume_btn", 
-												function() { Crafty.pause(); Crafty("Background").get(0).destroy(); Crafty.trigger("PlaySound", "pause"); }, 
-												floor.w / 2 - Crafty("Global").get(0).basicSize * 9, 
-												Crafty("Roof").get(0).y + Crafty("Global").get(0).basicSize * 55);
-	  										  	else if (Crafty("Background").get(0)) Crafty("Background").get(0).destroy();
-	  										  	setTimeout(function() { Crafty.trigger("PlaySound", "pause"); Crafty.pause(); }, 50);
-	  										  }.bind(this));
+	  									  	if (game_over || Crafty.isPaused()) return;
+	  									  	if (!Crafty.isPaused()) Crafty.e("Background").setTitle("GAME PAUSED")
+	  									  	.addButton("resume_btn", 
+										function() { Crafty.pause(); Crafty("Background").get(0).destroy(); Crafty.trigger("PlaySound", "pause"); }, 
+										floor.w / 2 - Crafty("Global").get(0).basicSize * 9, 
+										Crafty("Roof").get(0).y + Crafty("Global").get(0).basicSize * 55);
+	  									  	else if (Crafty("Background").get(0)) Crafty("Background").get(0).destroy();
+	  									  	setTimeout(function() { Crafty.trigger("PlaySound", "pause"); Crafty.pause(); }, 50);
+	  									  }.bind(this));
 	 var sound_btn = Crafty.e("2D, Canvas, soundon_btn, SpriteAnimation, Mouse").attr({ x : Crafty("Global").get(0).basicSize * 74,
 		                                                                                y : Crafty("Global").get(0).basicSize * 2,
 																						w : Crafty("Global").get(0).basicSize * 12,
@@ -62,13 +62,86 @@ Crafty.scene("Level", function() {
     
      
     
+     var SAVE_KEY = "chi247_bbb_save_v1";
+
+     // Autosave is best-effort: any storage failure (private mode, quota,
+     // disabled storage) is swallowed so it never interrupts play.
+     function saveState() {
+         try {
+             var bricks = [];
+             Crafty("Brick").each(function() {
+                 bricks.push({ col: this.col, strength: this.strength, rowsDown: this.rowsDown });
+             });
+             var extraBalls = [];
+             Crafty("ExtraBall").each(function() {
+                 extraBalls.push({ col: this.col, rowsDown: this.rowsDown });
+             });
+             var state = {
+                 v: 1,
+                 level: level,
+                 checkpoint: checkpoint,
+                 balls_cnt: balls_cnt,
+                 bricks: bricks,
+                 extraBalls: extraBalls
+             };
+             localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+         } catch (e) { /* ignore */ }
+     }
+
+     function clearSavedState() {
+         try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ }
+     }
+
+     function loadSavedState() {
+         try {
+             var raw = localStorage.getItem(SAVE_KEY);
+             if (!raw) return null;
+             var state = JSON.parse(raw);
+             if (!state || state.v !== 1 || !Array.isArray(state.bricks) || typeof state.level !== "number") return null;
+             return state;
+         } catch (e) { return null; }
+     }
+
+     // Rebuilds the exact saved round: same level/checkpoint/ball count and
+     // the same bricks (column, strength, rows fallen) placed instantly with
+     // no tween, instead of NextLevel's normal random spawn.
+     function restoreState(state) {
+         Crafty("Ball").each(function() { this.destroy(); });
+         Crafty("Brick").each(function() { this.destroy(); });
+         Crafty("ExtraBall").each(function() { this.destroy(); });
+
+         level = state.level;
+         checkpoint = state.checkpoint || 1;
+         moving_balls = 0;
+         balls_cnt = Math.max(1, state.balls_cnt || 1);
+         level_state = "init";
+         bricks_total_strength = 0;
+         old_bts = 0;
+         game_over = false;
+
+         for (var i = 0; i < balls_cnt; i++)
+             Crafty.e("Ball").place(floor.w / 2 - Crafty("Global").get(0).ballSize / 2, floor.y - Crafty("Global").get(0).ballSize);
+         next_place = { x: Crafty("Ball").get(0).x, y: Crafty("Ball").get(0).y };
+
+         state.bricks.forEach(function(b) {
+             Crafty.e("Brick").initLevel(b.strength).place(b.col).skipDown(b.rowsDown || 0);
+         });
+         (state.extraBalls || []).forEach(function(eb) {
+             Crafty.e("ExtraBall").place(eb.col).skipDown(eb.rowsDown || 0);
+         });
+
+         balls_init = balls_cnt;
+         var labelW = Crafty("Global").get(0).basicSize * 14;
+         balls_cnt_text.w = labelW;
+         balls_cnt_text.x = Math.min(next_place.x + Crafty("Global").get(0).basicSize, Crafty.viewport.width - labelW);
+     }
+
      function resetVars(r) {
 		 Crafty("Ball").each(function() { this.destroy(); });
 		 Crafty("Brick").each(function() { this.destroy(); });
 		 Crafty("ExtraBall").each(function() { this.destroy(); });
 		 
 		 level = r - 1;
-		 checkpoint = 1;
 		 moving_balls = 0;
 		 balls_cnt = r;
 		 level_state = "init";
@@ -113,7 +186,7 @@ Crafty.scene("Level", function() {
 			if (i == places[Math.floor(bricks_cnt) + (bricks_cnt > Math.floor(bricks_cnt))]) Crafty.e("ExtraBall").place(i);
 		}
 
-		if (!game_over) level_state = "init";
+		if (!game_over) { level_state = "init"; saveState(); }
 		spawnDelay.destroy();
 
 		}, Crafty("Global").get(0).tweenDuration);
@@ -168,9 +241,10 @@ Crafty.scene("Level", function() {
 				   .setTitle("GAME OVER")
 				   .addButton("restart_btn", 
 							  function() { resetGame(checkpoint); Crafty("Background").get(0).destroy(); }, 
-							  floor.w / 2 - Crafty("Global").get(0).basicSize * 9, 
+							  floor.w / 2 - Crafty("Global").get(0).basicSize * 9,
 							  Crafty("Roof").get(0).y + Crafty("Global").get(0).basicSize * 55);
 			 game_over = true;
+			 clearSavedState(); // don't let a refresh after death resurrect the lost round
 			 Crafty.trigger("PlaySound", "over");
 		}
 	 });
@@ -297,8 +371,92 @@ Crafty.scene("Level", function() {
 		Crafty.trigger("PlaySound", "start");
 		Crafty.trigger("NextLevel");
 	 }
-	 
-	 resetGame(1);
+
+	 // Cheat codes: "GOTO<n>" jumps straight to level n (2-400) instead of
+	 // starting at level 1. Also sets the checkpoint to n, so dying there
+	 // still resumes at n rather than falling all the way back to level 1.
+	 var CHEAT_PATTERN = /^GOTO(\d{1,3})$/i;
+	 var CHEAT_MIN_LEVEL = 2, CHEAT_MAX_LEVEL = 400;
+
+	 function showStartScreen() {
+		 var g = Crafty("Global").get(0);
+		 var roofY = Crafty("Roof").get(0).y;
+		 var bg = Crafty.e("Background").setTitle("BALLS BREAK BRICKS");
+
+		 var input = document.createElement("input");
+		 input.type = "text";
+		 input.placeholder = "CHEAT CODE";
+		 input.autocomplete = "off";
+		 input.autocapitalize = "characters";
+		 input.spellcheck = false;
+		 input.maxLength = 10;
+		 input.style.position = "absolute";
+		 input.style.left = (Crafty.viewport.width / 2 - g.basicSize * 22) + "px";
+		 input.style.top = (roofY + g.basicSize * 56) + "px";
+		 input.style.width = (g.basicSize * 44) + "px";
+		 input.style.height = (g.basicSize * 10) + "px";
+		 input.style.fontSize = (g.basicSize * 5) + "px";
+		 input.style.textAlign = "center";
+		 input.style.textTransform = "uppercase";
+		 // Crafty's own DOM layer (which the Background overlay/title live in)
+		 // renders at z-index 30 and the canvas layer at 20, both as direct
+		 // siblings of this element under Crafty.stage.elem — a low z-index
+		 // here sits *underneath* them and never receives clicks/taps.
+		 input.style.zIndex = 1000;
+		 input.style.boxSizing = "border-box";
+		 input.style.border = "2px solid #ffffff";
+		 input.style.borderRadius = "4px";
+		 input.style.background = "#222222";
+		 input.style.color = "#ffe066";
+		 Crafty.stage.elem.appendChild(input);
+
+		 // Pause the engine while the start screen is up: nothing has been
+		 // placed yet (no balls/bricks), so a stray tap on the background
+		 // would otherwise reach stageMouseDown's aiming logic and crash on
+		 // a missing ball.
+		 Crafty.pause(true);
+
+		 // Returns false (and does nothing) on a second call — guards against
+		 // the same tap being dispatched twice on touch devices (see the
+		 // matching comment on pause_btn above).
+		 var finished = false;
+		 function cleanup() {
+			 if (finished) return false;
+			 finished = true;
+			 if (input.parentNode) input.parentNode.removeChild(input);
+			 bg.destroy();
+			 Crafty.pause(false);
+			 return true;
+		 }
+
+		 function applyCheatOrStart() {
+			 var raw = input.value.trim();
+			 if (!raw) { if (cleanup()) resetGame(1); return; }
+			 var m = CHEAT_PATTERN.exec(raw);
+			 var n = m && parseInt(m[1], 10);
+			 if (n >= CHEAT_MIN_LEVEL && n <= CHEAT_MAX_LEVEL) {
+				 if (cleanup()) { checkpoint = n; resetGame(n); }
+			 } else {
+				 input.value = "";
+				 input.placeholder = "INVALID CODE";
+				 setTimeout(function() { input.placeholder = "CHEAT CODE"; }, 1200);
+			 }
+		 }
+
+		 input.addEventListener("keydown", function(e) {
+			 if (e.key === "Enter") { e.preventDefault(); applyCheatOrStart(); }
+		 });
+
+		 bg.addButton("play_btn", function() { if (cleanup()) resetGame(1); },
+					  floor.w / 2 - g.basicSize * 9, roofY + g.basicSize * 70);
+	 }
+
+	 var savedState = loadSavedState();
+	 if (savedState) {
+		 restoreState(savedState);
+	 } else {
+		 showStartScreen();
+	 }
 	
 	 function prependInfinity() {
 	 	if (balls_init == 0 && moving_balls > 0 && old_bts == bricks_total_strength) {

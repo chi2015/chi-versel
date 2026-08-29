@@ -13,9 +13,8 @@ Crafty.c("Brick", {
 								         family: 'Arial',
 								         weight: 'bold'}).text('');
 		this.strength = 1;
-		this.caption.bind("TweenEnd", (function() {
-			if (this.caption.y + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize >= Crafty("Floor").get(0).y) Crafty.trigger("GameOver");
-		}).bind(this));
+		this.col = 0;
+		this.rowsDown = 0;
 	},
 	initLevel : function(level) {
 		this.setLevel(level);
@@ -29,6 +28,8 @@ Crafty.c("Brick", {
 		return this;
 	},
 	place : function(i) {
+		this.col = i;
+		this.rowsDown = 0;
 		this.x = Crafty("Global").get(0).brickWithGap * i;
 		this.y = Crafty("Global").get(0).roofY + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize;
 		this.caption.x = this.x;
@@ -40,6 +41,24 @@ Crafty.c("Brick", {
 		var diff_caption = {y : this.caption.y + Crafty("Global").get(0).brickWithGap};
 		this.tween(diff, Crafty("Global").get(0).tweenDuration);
 		this.caption.tween(diff_caption, Crafty("Global").get(0).tweenDuration);
+		this.rowsDown++;
+		// Checked synchronously against the computed target position (not a
+		// TweenEnd callback): if the tween gets interrupted/re-issued before
+		// it finishes (e.g. back-to-back NextLevel rounds), a deferred check
+		// never fires and a brick can slide past the floor unnoticed.
+		if (diff.y + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize >= Crafty("Floor").get(0).y) {
+			Crafty.trigger("GameOver");
+		}
+	},
+	// Instantly jumps `n` rows down with no tween/animation and no floor
+	// check — used only to reconstruct a saved position on load, not during
+	// normal play.
+	skipDown : function(n) {
+		var step = Crafty("Global").get(0).brickWithGap;
+		this.y += step * n;
+		this.caption.y += step * n;
+		this.rowsDown += n;
+		return this;
 	},
 	damage : function() {
 		this.strength--;
@@ -137,6 +156,8 @@ Crafty.c("ExtraBall", {
 		this.h = Crafty("Global").get(0).ballSize;
 		this.onHit("Floor", this.picked_end);
 		this.isPicked = false;
+		this.col = 0;
+		this.rowsDown = 0;
 	},
 	picked : function() {
 		if (this.isPicked) return;
@@ -147,6 +168,8 @@ Crafty.c("ExtraBall", {
 		Crafty.trigger("PlaySound", "pick");
 	},
 	place : function(i) {
+		this.col = i;
+		this.rowsDown = 0;
 		this.x = Crafty("Global").get(0).brickWithGap * i + Crafty("Global").get(0).brickSize / 2 - this.w / 2;
 		this.y = Crafty("Global").get(0).roofY + Crafty("Global").get(0).gapSize + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).brickSize / 2 - this.h / 2;
 		return this;
@@ -154,8 +177,16 @@ Crafty.c("ExtraBall", {
 	down : function() {
 		var diff = {y : this.y + Crafty("Global").get(0).brickWithGap};
 		this.tween(diff, Crafty("Global").get(0).tweenDuration);
+		this.rowsDown++;
 		if (diff.y + Crafty("Global").get(0).brickWithGap + Crafty("Global").get(0).gapSize >= Crafty("Floor").get(0).y)
 			this.picked();
+	},
+	// Instantly jumps `n` rows down with no tween/animation and no
+	// auto-pickup check — used only to reconstruct a saved position on load.
+	skipDown : function(n) {
+		this.y += Crafty("Global").get(0).brickWithGap * n;
+		this.rowsDown += n;
+		return this;
 	},
 	picked_end : function() {
 		var plusText = Crafty.e("2D, DOM, Text").attr({ x : this.x, y : Crafty("Floor").get(0).y + Crafty("Global").get(0).ballSize})
@@ -205,17 +236,37 @@ Crafty.c("Direction", {
 		this.x = ball.x + ball.w / 2;
 		this.y = ball.y + ball.h / 2;
 		this._aimRotation = 270;
+		this._displayRotation = 270;
 		this._dashes = [];
 		this._rebuild();
+		// Smooth the *drawn* line toward the target rotation once per frame,
+		// instead of rebuilding it synchronously on every raw touchmove —
+		// touch input on mobile can be noisy/high-frequency, and rebuilding
+		// 1:1 with each raw sample makes the line visibly shake.
+		this._onEnterFrame = this._smoothStep.bind(this);
+		Crafty.bind("EnterFrame", this._onEnterFrame);
 	},
 	remove : function() {
 		this._clearDashes();
+		Crafty.unbind("EnterFrame", this._onEnterFrame);
 	},
 	getRotation : function() {
 		return this._aimRotation;
 	},
 	setRotation : function(r) {
 		this._aimRotation = r;
+		// Rebuilding happens in _smoothStep, not here — see the comment above.
+	},
+	_smoothStep : function() {
+		var diff = this._aimRotation - this._displayRotation;
+		if (Math.abs(diff) < 0.05) {
+			if (this._displayRotation !== this._aimRotation) {
+				this._displayRotation = this._aimRotation;
+				this._rebuild();
+			}
+			return;
+		}
+		this._displayRotation += diff * 0.35;
 		this._rebuild();
 	},
 	_clearDashes : function() {
@@ -224,7 +275,7 @@ Crafty.c("Direction", {
 	},
 	_rebuild : function() {
 		this._clearDashes();
-		var direction = this._aimRotation - 180;
+		var direction = this._displayRotation - 180;
 		var dx = -Math.cos(Math.PI * direction / 180);
 		var dy = -Math.sin(Math.PI * direction / 180);
 		var segments = this._computeSegments(this.x, this.y, dx, dy);
