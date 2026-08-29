@@ -382,6 +382,10 @@ Crafty.scene("Level", function() {
 		 var g = Crafty("Global").get(0);
 		 var roofY = Crafty("Roof").get(0).y;
 		 var bg = Crafty.e("Background").setTitle("BALLS BREAK BRICKS");
+		 // Background's default title size (basicSize*10) is sized for a
+		 // short word like "GAME OVER" — this longer name wraps to two
+		 // lines at that size and overlaps the controls below it.
+		 bg.title.textFont({ size: (g.basicSize * 6) + 'px', weight: 'bold' });
 
 		 var input = document.createElement("input");
 		 input.type = "text";
@@ -410,6 +414,14 @@ Crafty.scene("Level", function() {
 		 input.style.color = "#ffe066";
 		 Crafty.stage.elem.appendChild(input);
 
+		 // Makes clear the code is optional — PLAY with it left blank just
+		 // starts a normal game.
+		 var hint = Crafty.e("2D, DOM, Text").attr({
+			 x: 0, y: roofY + g.basicSize * 67, z: 3, w: Crafty.viewport.width,
+		 }).textAlign('center').textColor('#ffffffaa')
+		   .textFont({ size: (g.basicSize * 3.4) + 'px' })
+		   .text('(optional - leave blank to play normally)');
+
 		 // Pause the engine while the start screen is up: nothing has been
 		 // placed yet (no balls/bricks), so a stray tap on the background
 		 // would otherwise reach stageMouseDown's aiming logic and crash on
@@ -424,6 +436,7 @@ Crafty.scene("Level", function() {
 			 if (finished) return false;
 			 finished = true;
 			 if (input.parentNode) input.parentNode.removeChild(input);
+			 hint.destroy();
 			 bg.destroy();
 			 Crafty.pause(false);
 			 return true;
@@ -448,7 +461,7 @@ Crafty.scene("Level", function() {
 		 });
 
 		 bg.addButton("play_btn", function() { if (cleanup()) resetGame(1); },
-					  floor.w / 2 - g.basicSize * 9, roofY + g.basicSize * 70);
+					  floor.w / 2 - g.basicSize * 9, roofY + g.basicSize * 74);
 	 }
 
 	 var savedState = loadSavedState();
