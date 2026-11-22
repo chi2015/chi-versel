@@ -5,7 +5,7 @@
       "src": "index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": "{albums,bbb,citadels,itunes100,m-combinations,mafia-random-card,mafia-random-number,playlist,poker-chips-counter,public,views,metromap-builder}/**"
+        "includeFiles": "{albums,bbb,citadels,itunes100,m-combinations,mafia-random-card,mafia-random-number,playlist,poker-chips-counter,public,views,metromap-builder,superfrog}/**"
       }
     }
   ],

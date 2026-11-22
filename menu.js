@@ -1,5 +1,17 @@
 module.exports = [
 	{
+		title: 'Superfrog',
+		url: '/superfrog',
+		className: 'superfrog'
+	},
+
+	{
+		title: 'Metro Map Builder',
+		url: '/metromap-builder',
+		className: 'metromap-builder'
+	},
+
+	{
 		title: 'Poker Chips Counter',
 		url: '/poker-chips-counter',
 		className: 'poker-chips-counter'
