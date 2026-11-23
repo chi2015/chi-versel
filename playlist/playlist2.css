@@ -262,9 +262,10 @@ body {
   grid-row: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-self: start;
   gap: var(--space-xs);
-  padding: 0 var(--space-sm);
+  padding: 0 var(--space-md);
   font-family: var(--font-display);
   font-size: var(--fs-sm);
   font-weight: 600;
