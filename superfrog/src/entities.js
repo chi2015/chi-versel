@@ -214,6 +214,89 @@ class Flyer extends Phaser.Physics.Arcade.Sprite {
   }
 }
 
+// ---------------------------------------------------------------- Boss: King Beetle
+// Sleeps until the player passes triggerX, then patrols its arena and hops.
+// Takes 3 stomps; after each one it flashes, is briefly invulnerable, and
+// gets faster and hops more often.
+class Boss extends Phaser.Physics.Arcade.Sprite {
+  constructor(scene, x, y, minX, maxX, triggerX) {
+    super(scene, x, y, 'boss-1');
+    this.scene = scene;
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+    this.setSize(48, 32).setOffset(8, 14);
+    this.body.setGravityY(PHYSICS.gravityDown);
+    this.setCollideWorldBounds(true);
+    this.setDepth(5);
+    this.minX = minX; this.maxX = maxX; this.triggerX = triggerX;
+    this.maxHealth = 3;
+    this.health = 3;
+    this.dir = -1;
+    this.awake = false;
+    this.dead = false;
+    this.invulnerableUntil = 0;
+    this.nextHopAt = 0;
+  }
+
+  get speed() { return [0, 150, 110, 75][this.health]; }
+
+  isInvulnerable(time) { return time < this.invulnerableUntil; }
+
+  update(time, player) {
+    if (this.dead) return;
+    this.setTexture(Math.floor(time / (this.awake ? 160 : 400)) % 2 === 0 ? 'boss-1' : 'boss-2');
+    if (!this.awake) {
+      this.setVelocityX(0);
+      if (player.x > this.triggerX) {
+        this.awake = true;
+        this.nextHopAt = time + 1500;
+        this.scene.events.emit('bossAwake', this.health, this.maxHealth);
+      }
+      return;
+    }
+    if (this.x <= this.minX || this.body.blocked.left) this.dir = 1;
+    if (this.x >= this.maxX || this.body.blocked.right) this.dir = -1;
+    this.setVelocityX(this.speed * this.dir);
+
+    const grounded = this.body.blocked.down;
+    if (grounded && time > this.nextHopAt) {
+      const anger = this.maxHealth - this.health;
+      this.setVelocityY(-380 - anger * 60);
+      this.nextHopAt = time + 2200 - anger * 500 + Math.random() * 900;
+    }
+
+    this.setAlpha(this.isInvulnerable(time) && Math.floor(time / 70) % 2 === 0 ? 0.4 : 1);
+  }
+
+  hit(time) {
+    if (this.dead || this.isInvulnerable(time)) return false;
+    this.health -= 1;
+    SFX.stomp();
+    this.invulnerableUntil = time + 1000;
+    this.setTintFill(0xffffff);
+    this.scene.time.delayedCall(120, () => { if (this.active) this.clearTint(); });
+    this.scene.cameras.main.shake(150, 0.006);
+    this.scene.events.emit('bossHit', this.health, this.maxHealth);
+    if (this.health <= 0) this.die();
+    return true;
+  }
+
+  die() {
+    this.dead = true;
+    this.body.enable = false;
+    this.setAlpha(1);
+    SFX.gameover();
+    this.scene.tweens.add({
+      targets: this, scaleY: 0.2, scaleX: 1.3, y: this.y + 14, alpha: 0, angle: 10,
+      duration: 700, ease: 'Quad.easeIn',
+      onComplete: () => {
+        this.scene.events.emit('bossDefeated');
+        this.destroy();
+      },
+    });
+  }
+}
+
 // ---------------------------------------------------------------- Coin
 class Coin extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {

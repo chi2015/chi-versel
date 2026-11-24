@@ -14,6 +14,6 @@ class BootScene extends Phaser.Scene {
     generateAllTextures(this);
 
     label.destroy();
-    this.scene.start('MainScene');
+    this.scene.start('StartScene');
   }
 }

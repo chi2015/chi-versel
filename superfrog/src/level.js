@@ -110,7 +110,7 @@ function buildLevel1_1() {
     entities.coins.push({ col: c, row: tunnelFloorRow - 1 });
   }
   entities.mushrooms.push({ col: 38, row: tunnelFloorRow - 1 });
-  entities.fruits.push({ col: 41, row: tunnelFloorRow - 1, type: 'banana' });
+  entities.fruits.push({ col: 40, row: tunnelFloorRow - 1, type: 'banana' });
 
   // ---- Zone 4: steep hill climb with spikes (cols 47-60) --------------
   [53, 55, 57].forEach((c) => {
@@ -283,7 +283,7 @@ function buildLevel1_2() {
   for (let r = spireTopRow; r <= 9; r++) setTile(r, spireCol, TILE.CAVE);
   entities.fruits.push({ col: spireCol, row: spireTopRow - 1, type: 'cherry' });
   entities.flyers.push({ minCol: 85, maxCol: 108, row: 11, amp: 2, speed: 62 });
-  entities.mushrooms.push({ col: 104, row: islands2[3].row - 1 });
+  entities.mushrooms.push({ col: 103, row: islands2[3].row - 1 });
 
   // ---- Zone 5: spike descent 2 (cols 110-118) ---------------------------
   [111, 114, 117].forEach((c) => entities.spikes.push({ col: c, row: surfaceRow[c] - 1 }));
@@ -315,7 +315,9 @@ function buildLevel1_2() {
   setTile(cave2FloorRow - 1, 125, TILE.CAVE);
   setTile(cave2FloorRow - 1, 130, TILE.CAVE);
   for (let c = cave2C0 + 2; c <= cave2C1 - 2; c += 2) {
-    entities.coins.push({ col: c, row: cave2FloorRow - 1 });
+    // nudge coins off the step blocks so they aren't buried inside solid rock
+    const col = grid[cave2FloorRow - 1][c] === TILE.CAVE ? c + 1 : c;
+    entities.coins.push({ col, row: cave2FloorRow - 1 });
   }
   entities.mushrooms.push({ col: 125, row: cave2FloorRow - 2 });
   entities.fruits.push({ col: 130, row: cave2FloorRow - 2, type: 'cherry' });
@@ -329,8 +331,8 @@ function buildLevel1_2() {
   entities.crawlers.push({ minCol: 136, maxCol: 141, row: surfaceRow[138] - 1 });
   entities.flyers.push({ minCol: 141, maxCol: 146, row: surfaceRow[143] - 3, amp: 1.4, speed: 60 });
   entities.mushrooms.push({ col: 140, row: surfaceRow[140] - 1 });
-  entities.fruits.push({ col: 138, row: surfaceRow[138] - 2, type: 'apple' });
-  entities.fruits.push({ col: 144, row: surfaceRow[144] - 2, type: 'banana' });
+  entities.fruits.push({ col: 139, row: surfaceRow[139] - 2, type: 'apple' });
+  entities.fruits.push({ col: 145, row: surfaceRow[145] - 2, type: 'banana' });
   for (let c = 136; c <= 146; c += 2) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
 
   const flagCol = 147;
@@ -422,7 +424,8 @@ function buildLevel1_3() {
   ];
   islands1.forEach((isl) => {
     for (let c = isl.c0; c <= isl.c1; c++) setTile(isl.row, c, TILE.ISLAND);
-    entities.coins.push({ col: isl.c0, row: isl.row - 1 });
+    // single-tile islands also hold a mushroom/fruit, so float the coin one row higher
+    entities.coins.push({ col: isl.c0, row: isl.row - (isl.c0 === isl.c1 ? 2 : 1) });
   });
   entities.mushrooms.push({ col: 33, row: islands1[2].row - 1 });
   entities.fruits.push({ col: 39, row: islands1[4].row - 1, type: 'banana' });
@@ -463,7 +466,7 @@ function buildLevel1_3() {
     if (c >= cave1LedgeC0 - 1 && c <= cave1LedgeC1 + 1) continue; // skip under the raised ledge
     entities.coins.push({ col: c, row: cave1FloorRow - 1 });
   }
-  entities.fruits.push({ col: 57, row: cave1FloorRow - 1, type: 'apple' });
+  entities.fruits.push({ col: 56, row: cave1FloorRow - 1, type: 'apple' });
   entities.fruits.push({ col: 72, row: cave1FloorRow - 1, type: 'cherry' });
   entities.crawlers.push({ minCol: cave1C0 + 2, maxCol: 59, row: cave1FloorRow - 1 });
   entities.crawlers.push({ minCol: 69, maxCol: cave1C1 - 2, row: cave1FloorRow - 1 });
@@ -493,6 +496,11 @@ function buildLevel1_3() {
   for (let r = spireTopRow; r <= 11; r++) { setTile(r, spireACol, TILE.CAVE); setTile(r, spireBCol, TILE.CAVE); }
   setTile(spireTopRow, 114, TILE.ISLAND);
   setTile(spireTopRow, 115, TILE.ISLAND);
+  // stepping islands inside the pit between the spires, so a player who drops
+  // in can climb back out (ground row 11 -> row 8 -> row 6 -> spire tops at row 4)
+  setTile(8, 116, TILE.ISLAND);
+  setTile(8, 117, TILE.ISLAND);
+  setTile(6, 113, TILE.ISLAND);
   entities.coins.push({ col: 114, row: spireTopRow - 1 });
   entities.fruits.push({ col: spireACol, row: spireTopRow - 1, type: 'cherry' });
   entities.fruits.push({ col: spireBCol, row: spireTopRow - 1, type: 'banana' });
@@ -535,12 +543,14 @@ function buildLevel1_3() {
   // low step blocks jutting from the floor for jump variety
   [157, 161, 169, 173].forEach((c) => setTile(cave2FloorRow - 1, c, TILE.CAVE));
   for (let c = cave2C0 + 2; c <= cave2C1 - 2; c += 2) {
-    entities.coins.push({ col: c, row: cave2FloorRow - 1 });
+    // nudge coins off the step blocks so they aren't buried inside solid rock
+    const col = grid[cave2FloorRow - 1][c] === TILE.CAVE ? c + 1 : c;
+    entities.coins.push({ col, row: cave2FloorRow - 1 });
   }
   entities.mushrooms.push({ col: 159, row: cave2FloorRow - 2 });
   entities.mushrooms.push({ col: 171, row: cave2FloorRow - 2 });
-  entities.fruits.push({ col: 163, row: cave2FloorRow - 1, type: 'apple' });
-  entities.fruits.push({ col: 175, row: cave2FloorRow - 1, type: 'cherry' });
+  entities.fruits.push({ col: 164, row: cave2FloorRow - 1, type: 'apple' });
+  entities.fruits.push({ col: 172, row: cave2FloorRow - 1, type: 'cherry' });
   entities.crawlers.push({ minCol: cave2C0 + 2, maxCol: 163, row: cave2FloorRow - 1 });
   entities.crawlers.push({ minCol: 163, maxCol: 172, row: cave2FloorRow - 1 });
   entities.crawlers.push({ minCol: 172, maxCol: cave2C1 - 2, row: cave2FloorRow - 1 });
@@ -552,8 +562,8 @@ function buildLevel1_3() {
   entities.crawlers.push({ minCol: 179, maxCol: 184, row: surfaceRow[181] - 1 });
   entities.flyers.push({ minCol: 179, maxCol: 188, row: surfaceRow[184] - 3, amp: 1.6, speed: 72 });
   entities.mushrooms.push({ col: 183, row: surfaceRow[183] - 1 });
-  entities.fruits.push({ col: 181, row: surfaceRow[181] - 2, type: 'apple' });
-  entities.fruits.push({ col: 185, row: surfaceRow[185] - 2, type: 'banana' });
+  entities.fruits.push({ col: 182, row: surfaceRow[182] - 2, type: 'apple' });
+  entities.fruits.push({ col: 184, row: surfaceRow[184] - 2, type: 'banana' });
   for (let c = 179; c <= 188; c += 2) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
 
   const flagCol = 186;
@@ -567,7 +577,105 @@ function buildLevel1_3() {
   return { cols, rows, tileSize: TILE_SIZE, grid, surfaceRow, entities, number: '1-3', title: 'Highlands' };
 }
 
-const LEVEL_BUILDERS = [buildLevel1_1, buildLevel1_2, buildLevel1_3];
+/**
+ * Level 1-4 — short run to a boss: rolling hills, an island hop over a spike
+ * pit, a hill climb, then a flat walled arena with the King Beetle. The flag
+ * only appears once the boss has been stomped 3 times.
+ */
+function buildLevel1_4() {
+  const cols = 80;
+  const rows = 16;
+
+  const keyframes = [
+    [0, 11], [3, 10], [6, 11], [10, 9], [14, 11], [17, 11],
+    [19, 13], [28, 13], [30, 11], [33, 11],
+    [37, 8], [40, 8], [43, 11], [79, 11],
+  ];
+  const surfaceRow = interpolateHeights(keyframes, cols);
+
+  const grid = [];
+  for (let r = 0; r < rows; r++) grid.push(new Array(cols).fill(TILE.EMPTY));
+  for (let c = 0; c < cols; c++) {
+    for (let r = surfaceRow[c]; r < rows; r++) {
+      grid[r][c] = r === surfaceRow[c] ? TILE.GRASS : TILE.DIRT;
+    }
+  }
+
+  const entities = {
+    coins: [], mushrooms: [], fruits: [], spikes: [], trees: [],
+    crawlers: [], flyers: [], flag: null, playerStart: null, decorSuns: [], boss: null,
+  };
+
+  const setTile = (r, c, v) => {
+    if (r >= 0 && r < rows && c >= 0 && c < cols) grid[r][c] = v;
+  };
+
+  // ---- Zone 0: rolling hills (cols 0-16) -------------------------------
+  for (let c = 1; c <= 15; c += 2) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
+  entities.crawlers.push({ minCol: 8, maxCol: 14, row: surfaceRow[11] - 1 });
+  entities.fruits.push({ col: 10, row: surfaceRow[10] - 3, type: 'apple' });
+
+  // ---- Zone 1: island hop over a spike pit (cols 17-29) ----------------
+  // the pit walls slope 1 row per column, so falling in is never a trap
+  [21, 23, 25, 27].forEach((c) => entities.spikes.push({ col: c, row: surfaceRow[c] - 1 }));
+  const islands = [
+    { c0: 19, c1: 20, row: 9 },
+    { c0: 23, c1: 24, row: 8 },
+    { c0: 27, c1: 28, row: 9 },
+  ];
+  islands.forEach((isl) => {
+    for (let c = isl.c0; c <= isl.c1; c++) setTile(isl.row, c, TILE.ISLAND);
+    entities.coins.push({ col: isl.c0, row: isl.row - 1 });
+  });
+  entities.fruits.push({ col: 24, row: islands[1].row - 1, type: 'cherry' });
+  entities.flyers.push({ minCol: 18, maxCol: 29, row: 5, amp: 1.2, speed: 55 });
+
+  // ---- Zone 2: hill climb (cols 30-44) ---------------------------------
+  entities.crawlers.push({ minCol: 30, maxCol: 34, row: surfaceRow[32] - 1 });
+  for (let c = 31; c <= 43; c += 3) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
+  entities.mushrooms.push({ col: 38, row: surfaceRow[38] - 1 });
+  [36, 41].forEach((c, i) => {
+    entities.trees.push({ col: c, row: surfaceRow[c] - 1, scale: i % 2 === 0 ? 1.1 : 0.85 });
+  });
+
+  // ---- Zone 3: boss arena (cols 46-79) ---------------------------------
+  // two islands give the player height to drop onto the boss
+  const arenaIslands = [
+    { c0: 53, c1: 55, row: 8 },
+    { c0: 67, c1: 69, row: 8 },
+  ];
+  arenaIslands.forEach((isl) => {
+    for (let c = isl.c0; c <= isl.c1; c++) setTile(isl.row, c, TILE.ISLAND);
+  });
+  entities.fruits.push({ col: 54, row: 7, type: 'banana' });
+  entities.fruits.push({ col: 68, row: 7, type: 'apple' });
+  entities.boss = { col: 72, row: 9, minCol: 48, maxCol: 78, triggerCol: 49 };
+
+  const flagCol = 77;
+  entities.flag = { col: flagCol, row: surfaceRow[flagCol] - 1 };
+
+  entities.playerStart = { col: 1, row: surfaceRow[1] - 1 };
+  entities.decorSuns.push({ col: 20, row: 1 });
+
+  return { cols, rows, tileSize: TILE_SIZE, grid, surfaceRow, entities, number: '1-4', title: 'King Beetle' };
+}
+
+const LEVEL_BUILDERS = [buildLevel1_1, buildLevel1_2, buildLevel1_3, buildLevel1_4];
+const LEVEL_NUMBERS = ['1-1', '1-2', '1-3', '1-4']; // same order as LEVEL_BUILDERS
+
+// 4-digit cheat codes entered on the start screen to jump straight to a level.
+// Level 1-1 has none (that's what START GAME is for).
+const LEVEL_CHEAT_CODES = {
+  '1-2': '7314',
+  '1-3': '5926',
+  '1-4': '8642',
+};
+
+/** Level index for a cheat code, or -1 if the code is wrong. */
+function levelIndexForCheatCode(code) {
+  const number = Object.keys(LEVEL_CHEAT_CODES).find((n) => LEVEL_CHEAT_CODES[n] === code);
+  return number ? LEVEL_NUMBERS.indexOf(number) : -1;
+}
 
 function buildLevel(index) {
   const i = Math.max(0, Math.min(index || 0, LEVEL_BUILDERS.length - 1));

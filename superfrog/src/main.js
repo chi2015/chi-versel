@@ -20,7 +20,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, MainScene, GameOverScene],
+  scene: [BootScene, StartScene, MainScene, GameOverScene],
 };
 
 window.addEventListener('load', () => {

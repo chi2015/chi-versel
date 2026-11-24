@@ -28,6 +28,27 @@ class HUD {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
   }
 
+  /** Top-right "BOSS ♥♥♥" bar, created on first use. */
+  showBossHealth(health, maxHealth) {
+    if (!this.bossLabel) {
+      const right = this.scene.scale.width - 16;
+      this.bossHearts = [];
+      for (let i = 0; i < maxHealth; i++) {
+        this.bossHearts.push(this.scene.add.image(right - (maxHealth - i) * 24 + 4, 16, 'hud-heart')
+          .setScrollFactor(0).setDepth(1000).setOrigin(0, 0));
+      }
+      this.bossLabel = this.scene.add.text(right - maxHealth * 24 - 4, 14, 'BOSS', {
+        fontFamily: 'monospace', fontSize: '18px', color: '#ffffff', stroke: '#000000', strokeThickness: 4,
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(1000);
+    }
+    this.setBossHealth(health);
+  }
+
+  setBossHealth(health) {
+    if (!this.bossHearts) return;
+    this.bossHearts.forEach((h, i) => h.setTexture(i < health ? 'hud-heart' : 'hud-heart-empty'));
+  }
+
   setHealth(health) {
     this.hearts.forEach((h, i) => h.setTexture(i < health ? 'hud-heart' : 'hud-heart-empty'));
   }

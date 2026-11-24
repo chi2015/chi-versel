@@ -28,19 +28,30 @@ class GameOverScene extends Phaser.Scene {
       fontFamily: 'monospace', fontSize: '22px', color: '#ffffff',
     }).setOrigin(0.5);
 
+    // reveal the cheat code of the level the player just unlocked
+    const nextNumber = this.won && this.hasNext ? LEVEL_NUMBERS[this.nextLevelIndex] : null;
+    const nextCode = nextNumber && LEVEL_CHEAT_CODES[nextNumber];
+    if (nextCode) {
+      this.add.text(width / 2, height / 2 + 44, `CODE FOR LEVEL ${nextNumber}: ${nextCode}`, {
+        fontFamily: 'monospace', fontSize: '22px', color: '#ffe066', stroke: '#000000', strokeThickness: 4,
+      }).setOrigin(0.5);
+    }
+
     const btnLabel = this.won && this.hasNext
       ? '[ Press SPACE / Tap for Next Level ]'
       : allComplete
-        ? '[ Press SPACE / Tap to Play Again ]'
+        ? '[ Press SPACE / Tap for Main Menu ]'
         : '[ Press SPACE / Tap to Retry ]';
-    const btn = this.add.text(width / 2, height / 2 + 60, btnLabel, {
+    const btn = this.add.text(width / 2, height / 2 + (nextCode ? 96 : 60), btnLabel, {
       fontFamily: 'monospace', fontSize: '18px', color: '#ffe066',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     this.tweens.add({ targets: btn, alpha: 0.4, duration: 600, yoyo: true, repeat: -1 });
 
-    const targetLevelIndex = this.won && this.hasNext ? this.nextLevelIndex : (allComplete ? 0 : this.levelIndex);
-    const restart = () => this.scene.start('MainScene', { levelIndex: targetLevelIndex });
+    const targetLevelIndex = this.won && this.hasNext ? this.nextLevelIndex : this.levelIndex;
+    const restart = () => (allComplete
+      ? this.scene.start('StartScene')
+      : this.scene.start('MainScene', { levelIndex: targetLevelIndex }));
     this.input.keyboard.once('keydown-SPACE', restart);
     this.input.once('pointerdown', restart);
   }

@@ -92,6 +92,14 @@ class MainScene extends Phaser.Scene {
     this.physics.add.existing(this.flagTrigger, true);
     this.physics.add.overlap(this.player, this.flagTrigger, () => this.completeLevel(), undefined, this);
 
+    // boss levels: the flag stays hidden (and its trigger off) until the boss is beaten
+    if (this.boss) {
+      this.physics.add.collider(this.boss, this.solidLayer);
+      this.physics.add.overlap(this.player, this.boss, this.onBossOverlap, undefined, this);
+      this.flag.setVisible(false);
+      this.flagTrigger.body.enable = false;
+    }
+
     // ---- camera ----
     const cam = this.cameras.main;
     cam.setBounds(0, 0, worldW, worldH);
@@ -116,6 +124,24 @@ class MainScene extends Phaser.Scene {
 
     this.events.on('playerHurt', (health) => this.hud.setHealth(health));
     this.events.on('playerDied', () => this.onPlayerDied());
+    this.events.on('bossAwake', (health, max) => {
+      this.hud.showBossHealth(health, max);
+      this.hud.flashMessage('KING BEETLE! Jump on it 3 times!', 2200);
+    });
+    this.events.on('bossHit', (health) => this.hud.setBossHealth(health));
+    this.events.on('bossDefeated', () => this.revealFlag());
+  }
+
+  revealFlag() {
+    this.addScore(5000);
+    this.hud.flashMessage('BOSS DEFEATED! Reach the flag!', 2500);
+    SFX.powerup();
+    const finalY = this.flag.y;
+    this.flag.setVisible(true).setAlpha(0).setY(finalY - 240);
+    this.tweens.add({
+      targets: this.flag, y: finalY, alpha: 1, duration: 700, ease: 'Bounce.easeOut',
+      onComplete: () => { this.flagTrigger.body.enable = true; },
+    });
   }
 
   // ------------------------------------------------------------ background
@@ -198,6 +224,28 @@ class MainScene extends Phaser.Scene {
       const minX = f.minCol * TILE_SIZE + 8, maxX = f.maxCol * TILE_SIZE + 24;
       this.flyers.push(new Flyer(this, minX, f.row * TILE_SIZE + 16, minX, maxX, f.amp, f.speed));
     });
+
+    if (e.boss) {
+      const b = e.boss;
+      this.boss = new Boss(this, b.col * TILE_SIZE + 16, b.row * TILE_SIZE + 16,
+        b.minCol * TILE_SIZE + 32, b.maxCol * TILE_SIZE, b.triggerCol * TILE_SIZE);
+    } else {
+      this.boss = null;
+    }
+  }
+
+  onBossOverlap(player, boss) {
+    if (boss.dead || !player.alive) return;
+    const time = this.time.now;
+    // a stomp = falling, and the frog's feet were above the boss's back last frame
+    const prevBottom = player.body.bottom - player.body.deltaY();
+    const stomping = player.body.velocity.y > 0 && prevBottom <= boss.body.top + 10;
+    if (stomping) {
+      player.setVelocityY(PHYSICS.jumpVelocity * 0.85);
+      if (boss.hit(time)) this.addScore(1000);
+    } else if (!boss.isInvulnerable(time)) {
+      player.hurt(boss.x);
+    }
   }
 
   onEnemyOverlap(player, enemy) {
@@ -279,6 +327,7 @@ class MainScene extends Phaser.Scene {
     this.coins.forEach((c) => c.update(time));
     this.mushrooms.forEach((m) => m.update(time));
     this.fruits.forEach((f) => f.update(time));
+    if (this.boss && this.boss.active) this.boss.update(time, this.player);
 
     // safety net: falling out of the world counts as a hit-to-death
     if (this.player.y > this.worldH + 100) {

@@ -38,6 +38,9 @@ const SFX = {
     osc.stop(t0 + duration + 0.02);
   },
 
+  blip() {
+    this._tone(660, 0.05, 'square', 0.08);
+  },
   jump() {
     this._tone(420, 0.14, 'square', 0.15, 0, 720);
   },

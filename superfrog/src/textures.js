@@ -147,6 +147,44 @@ function generateAllTextures(scene) {
   bake(scene, 'crawler-1', 32, 26, (g) => drawCrawler(g, 0));
   bake(scene, 'crawler-2', 32, 26, (g) => drawCrawler(g, 1));
 
+  // ---------------------------------------------------------------- boss: King Beetle (64x48)
+  const drawBoss = (g, frame) => {
+    const b = frame === 1 ? 2 : 0;
+    // legs
+    g.fillStyle(COLORS.crawlerDark, 1);
+    g.fillRect(8, 38 - b, 7, 10); g.fillRect(20, 40 - b, 6, 8);
+    g.fillRect(38, 40 - b, 6, 8); g.fillRect(49, 38 - b, 7, 10);
+    // shell + belly
+    g.fillStyle(COLORS.crawlerDark, 1);
+    g.fillEllipse(32, 30 - b, 60, 32);
+    g.fillStyle(COLORS.crawlerShell, 1);
+    g.fillEllipse(32, 28 - b, 54, 28);
+    g.fillStyle(COLORS.crawlerBelly, 1);
+    g.fillEllipse(32, 38 - b, 40, 10);
+    g.fillStyle(COLORS.crawlerDark, 1);
+    g.fillEllipse(20, 20 - b, 10, 6); g.fillEllipse(44, 20 - b, 10, 6);
+    // angry eyes
+    g.fillStyle(COLORS.frogEye, 1);
+    g.fillCircle(23, 30 - b, 6); g.fillCircle(41, 30 - b, 6);
+    g.fillStyle(COLORS.frogPupil, 1);
+    g.fillCircle(24, 31 - b, 2.6); g.fillCircle(40, 31 - b, 2.6);
+    g.lineStyle(3, COLORS.crawlerDark, 1);
+    g.beginPath(); g.moveTo(15, 22 - b); g.lineTo(28, 26 - b); g.strokePath();
+    g.beginPath(); g.moveTo(49, 22 - b); g.lineTo(36, 26 - b); g.strokePath();
+    // crown
+    g.fillStyle(COLORS.coinDark, 1);
+    g.fillRect(20, 10 - b, 24, 6);
+    g.fillStyle(COLORS.coin, 1);
+    g.fillTriangle(20, 12 - b, 24, 1 - b, 28, 12 - b);
+    g.fillTriangle(28, 12 - b, 32, 0 - b, 36, 12 - b);
+    g.fillTriangle(36, 12 - b, 40, 1 - b, 44, 12 - b);
+    g.fillRect(21, 10 - b, 22, 4);
+    g.fillStyle(COLORS.heart, 1);
+    g.fillCircle(32, 12 - b, 2);
+  };
+  bake(scene, 'boss-1', 64, 48, (g) => drawBoss(g, 0));
+  bake(scene, 'boss-2', 64, 48, (g) => drawBoss(g, 1));
+
   // ---------------------------------------------------------------- flyer enemy
   const drawFlyer = (g, frame) => {
     const wing = frame === 1 ? 10 : 6;
