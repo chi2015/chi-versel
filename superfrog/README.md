@@ -36,7 +36,7 @@ split into clear files.
   via `game.device.input.touch`)
 
 3 hits of health (top-left hearts), score/coins top-left. Falling in the pit
-at world's bottom or 3 hits ends the run; reaching the flag completes it.
+at world's bottom or 3 hits ends the run; reaching the exit door (unlocked once every coin is collected) completes it.
 Space / tap restarts from the Game Over / Level Complete screen.
 
 ## Project structure
@@ -55,7 +55,7 @@ src/
                          same shape a real Tiled JSON export would give you,
                          so swapping in an actual Tiled level later is a
                          drop-in replacement for this one function
-  entities.js            Player, Crawler, Flyer, Coin, Mushroom classes + tree/flag helpers
+  entities.js            Player, Crawler, Flyer, Coin, Mushroom classes + tree helper
   HUD.js                 Top-left hearts + score display
   TouchControls.js       On-screen mobile buttons
   BootScene.js            Generates all textures, then starts MainScene
@@ -78,7 +78,7 @@ src/
    over/around, risk-reward coins near the top.
 5. **Forest cluster** — 4 procedurally-drawn trees (lumpy rounded canopy,
    idle sway tween), a patrolling crawler, a mushroom.
-6. **Final stretch** — open run with coins and a flyer, ending at a flag.
+6. **Final stretch** — open run with coins and a flyer, ending at the exit door.
 
 ## Technical notes
 

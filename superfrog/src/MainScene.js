@@ -61,6 +61,9 @@ class MainScene extends Phaser.Scene {
       if (!c.active || !c.body.enable) return;
       c.collect();
       this.addScore(100);
+      this.coinsLeft -= 1;
+      this.hud.setCoinsLeft(this.coinsLeft);
+      this.checkDoorUnlock();
     }, undefined, this);
 
     this.mushroomsGroup = this.physics.add.group();
@@ -81,23 +84,25 @@ class MainScene extends Phaser.Scene {
       this.addScore(50);
     }, undefined, this);
 
-    // flag / level-end marker (decorative sprite + a plain, easy-to-reason-about trigger zone)
-    const flagData = level.entities.flag;
-    this.flag = this.add.image(
-      flagData.col * TILE_SIZE + 16, (flagData.row + 1) * TILE_SIZE, 'flag'
+    // level-end door: locked until every coin is collected (and, on boss
+    // levels, the boss is beaten). Sprite + a plain trigger zone.
+    const doorData = level.entities.door;
+    this.coinsLeft = this.coins.length;
+    this.doorUnlocked = false;
+    this.bossDefeated = false;
+    this.nextLockedHintAt = 0;
+    this.door = this.add.image(
+      doorData.col * TILE_SIZE + 16, (doorData.row + 1) * TILE_SIZE, 'door-locked'
     ).setOrigin(0.5, 1);
-    this.flagTrigger = this.add.zone(
-      flagData.col * TILE_SIZE + 16, flagData.row * TILE_SIZE + 16, TILE_SIZE, TILE_SIZE * 2
+    this.doorTrigger = this.add.zone(
+      doorData.col * TILE_SIZE + 16, doorData.row * TILE_SIZE + 16, TILE_SIZE, TILE_SIZE * 2
     );
-    this.physics.add.existing(this.flagTrigger, true);
-    this.physics.add.overlap(this.player, this.flagTrigger, () => this.completeLevel(), undefined, this);
+    this.physics.add.existing(this.doorTrigger, true);
+    this.physics.add.overlap(this.player, this.doorTrigger, () => this.onDoorOverlap(), undefined, this);
 
-    // boss levels: the flag stays hidden (and its trigger off) until the boss is beaten
     if (this.boss) {
       this.physics.add.collider(this.boss, this.solidLayer);
       this.physics.add.overlap(this.player, this.boss, this.onBossOverlap, undefined, this);
-      this.flag.setVisible(false);
-      this.flagTrigger.body.enable = false;
     }
 
     // ---- camera ----
@@ -120,6 +125,7 @@ class MainScene extends Phaser.Scene {
     this.hud = new HUD(this, this.player.maxHealth);
     this.hud.setHealth(this.player.health);
     this.hud.setScore(this.score);
+    this.hud.setCoinsLeft(this.coinsLeft);
     this.hud.showLevelTitle(`LEVEL ${level.number} ${level.title}`);
 
     this.events.on('playerHurt', (health) => this.hud.setHealth(health));
@@ -129,19 +135,49 @@ class MainScene extends Phaser.Scene {
       this.hud.flashMessage('KING BEETLE! Jump on it 3 times!', 2200);
     });
     this.events.on('bossHit', (health) => this.hud.setBossHealth(health));
-    this.events.on('bossDefeated', () => this.revealFlag());
+    this.events.on('bossDefeated', () => {
+      this.bossDefeated = true;
+      this.bossDefeatedAt = this.time.now;
+      this.addScore(5000);
+      this.hud.flashMessage(this.coinsLeft > 0
+        ? `BOSS DEFEATED! Collect ${this.coinsLeft} more coin${this.coinsLeft === 1 ? '' : 's'}!`
+        : 'BOSS DEFEATED!', 2500);
+      this.checkDoorUnlock();
+    });
   }
 
-  revealFlag() {
-    this.addScore(5000);
-    this.hud.flashMessage('BOSS DEFEATED! Reach the flag!', 2500);
+  /** What still keeps the door shut, or null when it can open. */
+  doorLockReason() {
+    const parts = [];
+    if (this.coinsLeft > 0) parts.push(`${this.coinsLeft} coin${this.coinsLeft === 1 ? '' : 's'} left`);
+    if (this.boss && !this.bossDefeated) parts.push('beat the King Beetle');
+    return parts.length ? parts.join(' + ') : null;
+  }
+
+  checkDoorUnlock() {
+    if (this.doorUnlocked) return;
+    if (this.doorLockReason()) {
+      if (this.coinsLeft === 0) this.hud.flashMessage('ALL COINS! Now beat the King Beetle!', 2200);
+      return;
+    }
+    this.doorUnlocked = true;
     SFX.powerup();
-    const finalY = this.flag.y;
-    this.flag.setVisible(true).setAlpha(0).setY(finalY - 240);
-    this.tweens.add({
-      targets: this.flag, y: finalY, alpha: 1, duration: 700, ease: 'Bounce.easeOut',
-      onComplete: () => { this.flagTrigger.body.enable = true; },
+    this.door.setTexture('door-open');
+    this.tweens.add({ targets: this.door, scaleX: 1.2, scaleY: 1.2, duration: 160, yoyo: true, repeat: 1 });
+    // if the boss just died, let its "BOSS DEFEATED!" message show first
+    const justBeatBoss = this.bossDefeated && this.time.now - this.bossDefeatedAt < 500;
+    this.time.delayedCall(justBeatBoss ? 2600 : 0, () => {
+      if (!this.gameEnded) this.hud.flashMessage('DOOR UNLOCKED! Head to the exit!', 2500);
     });
+  }
+
+  onDoorOverlap() {
+    if (this.doorUnlocked) { this.completeLevel(); return; }
+    if (this.time.now < this.nextLockedHintAt) return;
+    this.nextLockedHintAt = this.time.now + 2000;
+    SFX.blip();
+    this.hud.flashMessage(`LOCKED: ${this.doorLockReason()}`, 1800);
+    this.tweens.add({ targets: this.door, x: this.door.x + 3, duration: 50, yoyo: true, repeat: 2 });
   }
 
   // ------------------------------------------------------------ background

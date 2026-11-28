@@ -57,7 +57,7 @@ function buildLevel1_1() {
 
   const entities = {
     coins: [], mushrooms: [], fruits: [], spikes: [], trees: [],
-    crawlers: [], flyers: [], flag: null, playerStart: null, decorSuns: [],
+    crawlers: [], flyers: [], door: null, playerStart: null, decorSuns: [],
   };
 
   const setTile = (r, c, v) => {
@@ -135,7 +135,7 @@ function buildLevel1_1() {
     entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
   }
 
-  // ---- Zone 6: final stretch + flag (cols 76-99) ------------------------
+  // ---- Zone 6: final stretch + door (cols 76-99) ------------------------
   for (let c = 77; c <= 93; c += 2) {
     entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
   }
@@ -144,8 +144,8 @@ function buildLevel1_1() {
   entities.fruits.push({ col: 90, row: surfaceRow[90] - 2, type: 'banana' });
   entities.fruits.push({ col: 94, row: surfaceRow[94] - 2, type: 'cherry' });
 
-  const flagCol = 96;
-  entities.flag = { col: flagCol, row: surfaceRow[flagCol] - 1 };
+  const doorCol = 96;
+  entities.door = { col: doorCol, row: surfaceRow[doorCol] - 1 };
 
   entities.playerStart = { col: 1, row: surfaceRow[1] - 1 };
   entities.decorSuns.push({ col: 20, row: 1 });
@@ -156,7 +156,7 @@ function buildLevel1_1() {
 /**
  * Level 1-2 — bigger and busier than 1-1: a bonus well shaft near the start,
  * two floating-island clusters, a standalone climbable spire, two cave/mine
- * tunnels, two spike climbs, and a longer forest run to the flag.
+ * tunnels, two spike climbs, and a longer forest run to the door.
  */
 function buildLevel1_2() {
   const cols = 150;
@@ -189,7 +189,7 @@ function buildLevel1_2() {
 
   const entities = {
     coins: [], mushrooms: [], fruits: [], spikes: [], trees: [],
-    crawlers: [], flyers: [], flag: null, playerStart: null, decorSuns: [],
+    crawlers: [], flyers: [], door: null, playerStart: null, decorSuns: [],
   };
 
   const setTile = (r, c, v) => {
@@ -324,7 +324,7 @@ function buildLevel1_2() {
   entities.crawlers.push({ minCol: cave2C0 + 2, maxCol: 126, row: cave2FloorRow - 1 });
   entities.crawlers.push({ minCol: 128, maxCol: cave2C1 - 2, row: cave2FloorRow - 1 });
 
-  // ---- Zone 7: forest final stretch + flag (cols 136-149) ---------------
+  // ---- Zone 7: forest final stretch + door (cols 136-149) ---------------
   [137, 139, 141, 143, 145].forEach((c, i) => {
     entities.trees.push({ col: c, row: surfaceRow[c] - 1, scale: i % 2 === 0 ? 1.1 : 0.85 });
   });
@@ -335,8 +335,8 @@ function buildLevel1_2() {
   entities.fruits.push({ col: 145, row: surfaceRow[145] - 2, type: 'banana' });
   for (let c = 136; c <= 146; c += 2) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
 
-  const flagCol = 147;
-  entities.flag = { col: flagCol, row: surfaceRow[flagCol] - 1 };
+  const doorCol = 147;
+  entities.door = { col: doorCol, row: surfaceRow[doorCol] - 1 };
 
   entities.playerStart = { col: 1, row: surfaceRow[1] - 1 };
   entities.decorSuns.push({ col: 30, row: 1 });
@@ -379,7 +379,7 @@ function buildLevel1_3() {
 
   const entities = {
     coins: [], mushrooms: [], fruits: [], spikes: [], trees: [],
-    crawlers: [], flyers: [], flag: null, playerStart: null, decorSuns: [],
+    crawlers: [], flyers: [], door: null, playerStart: null, decorSuns: [],
   };
 
   const setTile = (r, c, v) => {
@@ -414,7 +414,7 @@ function buildLevel1_3() {
 
   // ---- Zone 1: tight floating island cluster (cols 25-50) --------------
   const islands1 = [
-    { c0: 27, c1: 28, row: 9 },
+    { c0: 27, c1: 28, row: 10 }, // first step must be <= 3 rows above the ground (row 13)
     { c0: 30, c1: 31, row: 7 },
     { c0: 33, c1: 33, row: 5 },
     { c0: 36, c1: 37, row: 8 },
@@ -555,7 +555,7 @@ function buildLevel1_3() {
   entities.crawlers.push({ minCol: 163, maxCol: 172, row: cave2FloorRow - 1 });
   entities.crawlers.push({ minCol: 172, maxCol: cave2C1 - 2, row: cave2FloorRow - 1 });
 
-  // ---- Zone 7: crowded forest finale + flag (cols 179-189) --------------
+  // ---- Zone 7: crowded forest finale + door (cols 179-189) --------------
   [180, 182, 184, 186].forEach((c, i) => {
     entities.trees.push({ col: c, row: surfaceRow[c] - 1, scale: i % 2 === 0 ? 1.1 : 0.85 });
   });
@@ -566,8 +566,8 @@ function buildLevel1_3() {
   entities.fruits.push({ col: 184, row: surfaceRow[184] - 2, type: 'banana' });
   for (let c = 179; c <= 188; c += 2) entities.coins.push({ col: c, row: surfaceRow[c] - 2 });
 
-  const flagCol = 186;
-  entities.flag = { col: flagCol, row: surfaceRow[flagCol] - 1 };
+  const doorCol = 186;
+  entities.door = { col: doorCol, row: surfaceRow[doorCol] - 1 };
 
   entities.playerStart = { col: 1, row: surfaceRow[1] - 1 };
   entities.decorSuns.push({ col: 35, row: 1 });
@@ -579,8 +579,8 @@ function buildLevel1_3() {
 
 /**
  * Level 1-4 — short run to a boss: rolling hills, an island hop over a spike
- * pit, a hill climb, then a flat walled arena with the King Beetle. The flag
- * only appears once the boss has been stomped 3 times.
+ * pit, a hill climb, then a flat walled arena with the King Beetle. The door
+ * only unlocks once the boss has been stomped 3 times AND every coin is collected.
  */
 function buildLevel1_4() {
   const cols = 80;
@@ -603,7 +603,7 @@ function buildLevel1_4() {
 
   const entities = {
     coins: [], mushrooms: [], fruits: [], spikes: [], trees: [],
-    crawlers: [], flyers: [], flag: null, playerStart: null, decorSuns: [], boss: null,
+    crawlers: [], flyers: [], door: null, playerStart: null, decorSuns: [], boss: null,
   };
 
   const setTile = (r, c, v) => {
@@ -651,8 +651,8 @@ function buildLevel1_4() {
   entities.fruits.push({ col: 68, row: 7, type: 'apple' });
   entities.boss = { col: 72, row: 9, minCol: 48, maxCol: 78, triggerCol: 49 };
 
-  const flagCol = 77;
-  entities.flag = { col: flagCol, row: surfaceRow[flagCol] - 1 };
+  const doorCol = 77;
+  entities.door = { col: doorCol, row: surfaceRow[doorCol] - 1 };
 
   entities.playerStart = { col: 1, row: surfaceRow[1] - 1 };
   entities.decorSuns.push({ col: 20, row: 1 });

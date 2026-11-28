@@ -382,7 +382,7 @@ class Mushroom extends Phaser.Physics.Arcade.Sprite {
   }
 }
 
-// ---------------------------------------------------------------- helpers: tree / flag
+// ---------------------------------------------------------------- helpers: tree
 function spawnTree(scene, x, y, scale) {
   const key = Math.random() < 0.5 ? 'tree-1' : 'tree-2';
   const img = scene.add.image(x, y, key).setOrigin(0.5, 1).setScale(scale);

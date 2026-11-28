@@ -88,6 +88,41 @@ function generateAllTextures(scene) {
     g.fillStyle(COLORS.spike, 1); g.fillCircle(12, 2, 3);
   });
 
+  // ---------------------------------------------------------------- level-end door (40x64), locked + open
+  const drawDoorFrame = (g) => {
+    g.fillStyle(COLORS.spikeDark, 1);
+    g.fillEllipse(20, 20, 40, 40); g.fillRect(0, 20, 40, 44);
+    g.fillStyle(COLORS.spike, 1);
+    g.fillEllipse(20, 20, 34, 34); g.fillRect(3, 20, 34, 44);
+    noiseDots(g, 40, 64, 14, COLORS.spikeDark, 0.5);
+  };
+  const doorOpening = (g, color) => {
+    g.fillStyle(color, 1);
+    g.fillEllipse(20, 22, 28, 28); g.fillRect(6, 22, 28, 42);
+  };
+  bake(scene, 'door-locked', 40, 64, (g) => {
+    drawDoorFrame(g);
+    doorOpening(g, COLORS.woodDark);
+    g.fillStyle(COLORS.wood, 1);
+    g.fillRect(8, 16, 5, 48); g.fillRect(15, 10, 5, 54); g.fillRect(22, 10, 5, 54); g.fillRect(29, 16, 4, 48);
+    g.fillStyle(COLORS.spikeDark, 1);
+    g.fillRect(6, 24, 28, 3); g.fillRect(6, 50, 28, 3);
+    // padlock
+    g.lineStyle(3, COLORS.coinDark, 1);
+    g.strokeCircle(20, 34, 5);
+    g.fillStyle(COLORS.coin, 1); g.fillRect(13, 35, 14, 11);
+    g.fillStyle(COLORS.coinDark, 1); g.fillRect(13, 44, 14, 2);
+    g.fillStyle(COLORS.frogPupil, 1); g.fillCircle(20, 39, 1.8); g.fillRect(19, 39, 2, 4);
+  });
+  bake(scene, 'door-open', 40, 64, (g) => {
+    drawDoorFrame(g);
+    doorOpening(g, 0x1a1a2e);
+    g.fillStyle(COLORS.coin, 0.25); g.fillRect(10, 40, 22, 24); // warm light spilling out
+    g.fillStyle(COLORS.coin, 0.2); g.fillEllipse(20, 30, 18, 20);
+    g.fillStyle(COLORS.wood, 1); g.fillRect(6, 14, 5, 50); // door swung open against the frame
+    g.fillStyle(COLORS.woodDark, 1); g.fillRect(6, 14, 1, 50);
+  });
+
   // ---------------------------------------------------------------- frog player frames
   const drawFrog = (g, pose) => {
     const cx = 16, cy = 22;

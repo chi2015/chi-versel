@@ -1,5 +1,5 @@
 // ============================================================================
-// GameOverScene.js — shown on death or on reaching the flag; restarts level.
+// GameOverScene.js — shown on death or on reaching the exit door; restarts level.
 // ============================================================================
 
 class GameOverScene extends Phaser.Scene {

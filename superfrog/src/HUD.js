@@ -23,6 +23,10 @@ class HUD {
       fontFamily: 'monospace', fontSize: '18px', color: '#ffffff', stroke: '#00000080', strokeThickness: 3,
     }).setScrollFactor(0).setDepth(1000);
 
+    this.coinsLeftText = scene.add.text(16, 64, '', {
+      fontFamily: 'monospace', fontSize: '15px', color: '#ffffff', stroke: '#000000', strokeThickness: 3,
+    }).setScrollFactor(0).setDepth(1000);
+
     this.msgText = scene.add.text(scene.scale.width / 2, 70, '', {
       fontFamily: 'monospace', fontSize: '16px', color: '#ffffff', stroke: '#000000', strokeThickness: 4,
     }).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
@@ -51,6 +55,11 @@ class HUD {
 
   setHealth(health) {
     this.hearts.forEach((h, i) => h.setTexture(i < health ? 'hud-heart' : 'hud-heart-empty'));
+  }
+
+  setCoinsLeft(n) {
+    if (n > 0) this.coinsLeftText.setText(`COINS LEFT: ${n}`).setColor('#ffffff');
+    else this.coinsLeftText.setText('ALL COINS!').setColor('#ffe066');
   }
 
   setScore(score) {
